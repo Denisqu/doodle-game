@@ -1,14 +1,15 @@
+#include <QDebug>
+#include <QApplication>
+
 #include "mainwindow.h"
 #include "libs/doodle-lib/doodlelib.h"
-#include <QDebug>
-
-#include <QApplication>
+#include "libs/doodle-lib/view.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    qDebug() << "getOne = " << DoodleLib().getOne();
+
+    doodlelib::View view;
+    view.show();
     return a.exec();
 }
