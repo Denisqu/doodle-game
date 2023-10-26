@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     doodlelib::View view;
+    DoodleLib().helloWorldBox2D();
     view.show();
     return a.exec();
 }

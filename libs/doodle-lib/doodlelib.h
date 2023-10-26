@@ -8,6 +8,7 @@ class DOODLELIB_EXPORT DoodleLib
 public:
     DoodleLib();
     int getOne();
+    void helloWorldBox2D();
 };
 
 #endif // DOODLELIB_H
