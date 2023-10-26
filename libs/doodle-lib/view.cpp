@@ -1,14 +1,17 @@
 #include "view.h"
 #include <QKeyEvent>
 #include <QApplication>
+#include "gamescene.h"
 
 namespace doodlelib {
 
 View::View()
     : QGraphicsView()
 {
-    //setScene(m_gameScene);
+    auto scene = new GameScene(this);
+    setScene(scene);
     //resize(Game::RESOLUTION.width()+2, Game::RESOLUTION.height()+2);
+
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }

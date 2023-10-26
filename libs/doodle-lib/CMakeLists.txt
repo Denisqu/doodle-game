@@ -17,6 +17,8 @@ add_library(doodle-lib SHARED
   doodlelib.cpp
   doodlelib.h
   view.h view.cpp
+  gamescene.h gamescene.cpp
+  animatedsprite.h animatedsprite.cpp
 )
 
 target_link_libraries(doodle-lib PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)

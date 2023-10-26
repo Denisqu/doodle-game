@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QGraphicsScene>
+#include <QTimer>
 
 class GameScene : public QGraphicsScene
 {
@@ -10,7 +11,12 @@ class GameScene : public QGraphicsScene
 public:
     explicit GameScene(QObject *parent = nullptr);
 
-signals:
+private:
+    const double kUpdateTimeDeltaMs = 16.67;
+    QTimer* mUpdateTimer;
+
+private slots:
+    void update();
 
 };
 
