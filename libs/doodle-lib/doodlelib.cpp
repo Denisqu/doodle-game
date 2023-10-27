@@ -1,6 +1,6 @@
 #include "doodlelib.h"
-#include "box2d/box2d.h"
 #include <QDebug>
+#include "box2d/box2d.h"
 
 DoodleLib::DoodleLib()
 {

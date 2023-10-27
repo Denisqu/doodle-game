@@ -5,6 +5,8 @@
 #include <QGraphicsScene>
 #include <QTimer>
 
+#include "box2d/box2d.h"
+
 class GameScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -14,6 +16,9 @@ public:
 private:
     const double kUpdateTimeDeltaMs = 16.67;
     QTimer* mUpdateTimer;
+    b2World world;
+    QGraphicsRectItem* rectBox;
+    QGraphicsRectItem* rectGround;
 
 private slots:
     void update();

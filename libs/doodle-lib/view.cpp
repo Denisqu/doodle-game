@@ -10,7 +10,8 @@ View::View()
 {
     auto scene = new GameScene(this);
     setScene(scene);
-    //resize(Game::RESOLUTION.width()+2, Game::RESOLUTION.height()+2);
+    resize(1280, 720);
+    scale(1, -1);
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

@@ -26,6 +26,8 @@ add_library(doodle-lib SHARED
   gamescene.h gamescene.cpp
   animatedsprite.h animatedsprite.cpp
   spriteanimator.h spriteanimator.cpp
+  gamelogic.h gamelogic.cpp
+  entity.h entity.cpp
 )
 
 target_include_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include/)
