@@ -28,6 +28,7 @@ add_library(doodle-lib SHARED
   spriteanimator.h spriteanimator.cpp
   gamelogic.h gamelogic.cpp
   entity.h entity.cpp
+  entityrenderer.h entityrenderer.cpp
 )
 
 target_include_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include/)

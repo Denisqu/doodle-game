@@ -1,28 +1,32 @@
 #ifndef GAMESCENE_H
 #define GAMESCENE_H
 
-#include <QObject>
 #include <QGraphicsScene>
+#include <QObject>
 #include <QTimer>
+#include <unordered_map>
 
 #include "box2d/box2d.h"
 
-class GameScene : public QGraphicsScene
-{
-    Q_OBJECT
+class GameLogic;
+class Entity;
+
+class GameScene : public QGraphicsScene {
+  Q_OBJECT
 public:
-    explicit GameScene(QObject *parent = nullptr);
+  explicit GameScene(QObject *parent = nullptr);
+  QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
 
 private:
-    const double kUpdateTimeDeltaMs = 16.67;
-    QTimer* mUpdateTimer;
-    b2World world;
-    QGraphicsRectItem* rectBox;
-    QGraphicsRectItem* rectGround;
+  QTimer *mUpdateTimer;
+  GameLogic *logic_;
+  std::unordered_map<Entity, QGraphicsRectItem *> entityToRectItemMap;
+  const double sceneScale = 25;
+  // QGraphicsRectItem* rectBox;
+  // QGraphicsRectItem* rectGround;
 
 private slots:
-    void update();
-
+  void update();
 };
 
 #endif // GAMESCENE_H
