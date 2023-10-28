@@ -10,23 +10,21 @@
 
 class Entity;
 class EntityRenderer;
+class PlayerEntity;
 
 class GameLogic {
 public:
   static GameLogic *GetInstance();
-
   void
   setEntityRenderer(const std::shared_ptr<EntityRenderer> &newEntityRenderer);
   void addEntity(std::unique_ptr<Entity> entity);
   void
   addOnAddEntityCallback(std::function<void(const Entity &entity)> callback);
   void doOnActiveBody(std::function<void(b2Body *body)> func);
-
+  std::shared_ptr<Entity> getEnityByBody(b2Body *body);
   void step();
 
-  static constexpr double TimeStep = 1 / 90.f;
-
-  std::shared_ptr<Entity> getEnityByBody(b2Body *body);
+  static constexpr double TimeStep = 1 / 60.f;
 
 private:
   explicit GameLogic();
@@ -35,11 +33,10 @@ private:
 
   static GameLogic *instance_;
   std::shared_ptr<EntityRenderer> entityRenderer_;
-  std::unordered_map<b2Body *, std::shared_ptr<Entity>> entityByBody_;
-
+  std::unordered_map<b2Body *, std::shared_ptr<Entity>> basicEntityByBody_;
+  std::unordered_map<b2Body *, std::shared_ptr<PlayerEntity>>
+      playerEntityByBody_;
   std::vector<std::function<void(const Entity &entity)>> onAddEntityCallbacks_;
-
-  // physics:
   const int velocityIterations_ = 8;
   const int positionIterations_ = 3;
   const b2Vec2 gravity_ = b2Vec2(0.0, -10.0f);

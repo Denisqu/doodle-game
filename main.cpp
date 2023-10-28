@@ -1,16 +1,18 @@
-#include <QDebug>
 #include <QApplication>
+#include <QDebug>
 
-#include "mainwindow.h"
 #include "libs/doodle-lib/doodlelib.h"
 #include "libs/doodle-lib/view.h"
+#include "mainwindow.h"
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
 
-    doodlelib::View view;
-    DoodleLib().helloWorldBox2D();
-    view.show();
-    return a.exec();
+  doodlelib::View view;
+  view.setDragMode(QGraphicsView::NoDrag);
+  QRectF rect(QPointF(0, 0), QPointF(5000, 1000));
+  view.fitInView(rect);
+  view.setSceneRect(rect);
+  view.show();
+  return a.exec();
 }

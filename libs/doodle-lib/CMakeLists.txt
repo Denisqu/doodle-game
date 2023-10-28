@@ -30,6 +30,7 @@ add_library(doodle-lib SHARED
   entity.h entity.cpp
   entityrenderer.h entityrenderer.cpp
   entityconstructor.h entityconstructor.cpp
+  playerentity.h playerentity.cpp
 )
 
 target_include_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include/)

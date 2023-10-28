@@ -11,22 +11,17 @@ struct RenderInfo {
 
 class Entity {
 public:
-  // explicit Entity(const b2BodyDef &bodyDef, const b2FixtureDef &fixtureDef,
-  //              const b2Vec2 &boxDims);
-
   Entity(std::unique_ptr<b2BodyDef> bodyDef,
          std::unique_ptr<b2FixtureDef> fixtureDef, b2Vec2 boxDims);
 
   const std::shared_ptr<b2Body> body() const;
   const RenderInfo &renderInfo() const;
-
   const b2PolygonShape &pPolygonShape() const;
-
   const b2Vec2 &boxDims() const;
-
   const b2BodyDef &bodyDef() const;
-
   const b2FixtureDef &fixtureDef() const;
+
+  virtual ~Entity() = default;
 
 private:
   const std::unique_ptr<b2BodyDef> pBodyDef_;
@@ -39,3 +34,10 @@ private:
 };
 
 #endif // ENTITY_H
+
+/*
+ * Entity
+ * PlayerEntity <- должен управляться как с клавиш, так и с эмуляции клавиш
+ * EnemyEntity
+ *
+ */
