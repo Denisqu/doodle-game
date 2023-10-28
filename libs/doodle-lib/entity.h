@@ -32,7 +32,7 @@ private:
   const std::unique_ptr<b2BodyDef> pBodyDef_;
   const std::unique_ptr<b2FixtureDef> pFixtureDef_;
   const std::unique_ptr<b2PolygonShape> pPolygonShape_;
-  const std::shared_ptr<b2Body> pBody_;
+  // const std::shared_ptr<b2Body> pBody_;
   const b2Vec2 boxDims_;
 
   RenderInfo renderInfo_;

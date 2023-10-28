@@ -2,6 +2,8 @@
 #include "box2d/box2d.h"
 #include "entity.h"
 
+GameLogic *GameLogic::instance_ = nullptr;
+
 GameLogic *GameLogic::GetInstance() {
   if (instance_ == nullptr)
     instance_ = new GameLogic();
@@ -15,7 +17,8 @@ void GameLogic::step() {
 GameLogic::GameLogic() {}
 
 std::shared_ptr<Entity> GameLogic::getEnityByBody(b2Body *body) {
-  return std::make_shared<Entity>(entityByBody_[*body]);
+  // return std::make_shared<Entity>(entityByBody_[body]);
+  return std::shared_ptr<Entity>(entityByBody_[body]);
 }
 
 // TODO: возможно нужно будет удалить
@@ -25,14 +28,14 @@ void GameLogic::setEntityRenderer(
 }
 
 void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
-  for (auto callback : onAddEntityCallbacks_) {
+  for (const auto &callback : onAddEntityCallbacks_) {
     callback(*entity);
   }
 
   b2Body *body = world_.CreateBody(&entity->bodyDef());
   body->CreateFixture(&entity->fixtureDef());
 
-  entityByBody_[*body] = std::move(entity);
+  entityByBody_[body] = std::move(entity);
 }
 
 void GameLogic::addOnAddEntityCallback(

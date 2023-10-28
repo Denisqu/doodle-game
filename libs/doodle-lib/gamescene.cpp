@@ -5,7 +5,9 @@
 
 #include "box2d/box2d.h"
 #include "entity.h"
+#include "entityconstructor.h"
 #include "gamelogic.h"
+#include <QDebug>
 
 /** We need this to easily convert between pixel and real-world coordinates*/
 // static const float SCALE = 30.f;
@@ -112,13 +114,14 @@ GameScene::GameScene(QObject *parent)
     // нужно не только создавать rect, но и добавлять в таблицу [Entity,
     // QGraphicsRectItem *]
 
-    entityToRectItemMap[entity] =
+    entityToRectItemMap[&entity] =
         this->addRect(QRectF(0, 0, entity.boxDims().x * this->sceneScale,
                              entity.boxDims().y * this->sceneScale));
   });
 
+  /*
   auto bodyDef = b2BodyDef();
-  bodyDef.position = b2Vec2(0, 0);
+  bodyDef.position = b2Vec2(0, 10);
   bodyDef.type = b2_dynamicBody;
 
   auto polygonShape = b2PolygonShape();
@@ -139,11 +142,31 @@ GameScene::GameScene(QObject *parent)
   // auto groundEntity;
   logic_->addEntity(std::move(boxEntity));
 
-  mUpdateTimer->start(GameLogic::TimeStep);
+  bodyDef.position = b2Vec2(0, 0);
+  bodyDef.type = b2_staticBody;
+  auto boxEntity2 = std::make_unique<Entity>(
+      std::make_unique<b2BodyDef>(bodyDef),
+      std::make_unique<b2FixtureDef>(fixtureDef), b2Vec2(1, 1));
+  logic_->addEntity(std::move(boxEntity2));
+  */
+  auto dynamicBox_0 = std::unique_ptr<Entity>(
+      EntityConstructor::CreateDynamicBox(b2Vec2(1, 2), b2Vec2(50, 25)));
+  auto dynamicBox_1 = std::unique_ptr<Entity>(
+      EntityConstructor::CreateDynamicBox(b2Vec2(1, 3), b2Vec2(50, 75)));
+  auto dynamicBox_2 = std::unique_ptr<Entity>(
+      EntityConstructor::CreateDynamicBox(b2Vec2(2, 1), b2Vec2(50, 50)));
+  auto staticBox_0 = std::unique_ptr<Entity>(
+      EntityConstructor::CreateStaticBox(b2Vec2(100, 0.25f), b2Vec2(50, 0)));
+
+  logic_->addEntity(std::move(dynamicBox_0));
+  logic_->addEntity(std::move(dynamicBox_1));
+  logic_->addEntity(std::move(dynamicBox_2));
+  logic_->addEntity(std::move(staticBox_0));
+  mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
 
 QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
-  return entityToRectItemMap[entity];
+  return entityToRectItemMap[&entity];
 }
 
 void GameScene::update() {
@@ -157,8 +180,15 @@ void GameScene::update() {
     if (entity->renderInfo().isRenderingCollider) {
       // здесь нужно сопоставить entity с объектом, отвечающим за рендер, пока
       // что рендерится только один бокс на всех
-      this->getRectItemByEntity(*entity)->setPos(body->GetPosition().x,
-                                                 body->GetPosition().y);
+
+      qDebug() << "rendering this entity: " << entity.get()
+               << "with this rect: " << this->getRectItemByEntity(*entity)
+               << "its real pos:" << body->GetPosition().x << " "
+               << body->GetPosition().y;
+
+      this->getRectItemByEntity(*entity)->setPos(
+          (body->GetPosition().x - 1 * entity->boxDims().x / 2) * sceneScale,
+          (body->GetPosition().y - 1 * entity->boxDims().y / 2) * sceneScale);
     }
   });
 }

@@ -20,8 +20,8 @@ public:
 private:
   QTimer *mUpdateTimer;
   GameLogic *logic_;
-  std::unordered_map<Entity, QGraphicsRectItem *> entityToRectItemMap;
-  const double sceneScale = 25;
+  std::unordered_map<const Entity *, QGraphicsRectItem *> entityToRectItemMap;
+  const double sceneScale = 50;
   // QGraphicsRectItem* rectBox;
   // QGraphicsRectItem* rectGround;
 

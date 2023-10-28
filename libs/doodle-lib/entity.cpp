@@ -15,10 +15,6 @@ Entity::Entity(const b2BodyDef &bodyDef, const b2FixtureDef &fixtureDef,
 {}
 */
 
-const std::shared_ptr<b2Body> Entity::body() const {
-  return std::make_shared<b2Body>(pBody_);
-}
-
 const RenderInfo &Entity::renderInfo() const { return renderInfo_; }
 
 const b2PolygonShape &Entity::pPolygonShape() const { return *pPolygonShape_; }

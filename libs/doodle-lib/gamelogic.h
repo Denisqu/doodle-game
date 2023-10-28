@@ -14,6 +14,7 @@ class EntityRenderer;
 class GameLogic {
 public:
   static GameLogic *GetInstance();
+
   void
   setEntityRenderer(const std::shared_ptr<EntityRenderer> &newEntityRenderer);
   void addEntity(std::unique_ptr<Entity> entity);
@@ -23,7 +24,7 @@ public:
 
   void step();
 
-  static constexpr double TimeStep = 1 / 60.f;
+  static constexpr double TimeStep = 1 / 90.f;
 
   std::shared_ptr<Entity> getEnityByBody(b2Body *body);
 
@@ -34,7 +35,7 @@ private:
 
   static GameLogic *instance_;
   std::shared_ptr<EntityRenderer> entityRenderer_;
-  std::unordered_map<b2Body, std::shared_ptr<Entity>> entityByBody_;
+  std::unordered_map<b2Body *, std::shared_ptr<Entity>> entityByBody_;
 
   std::vector<std::function<void(const Entity &entity)>> onAddEntityCallbacks_;
 
