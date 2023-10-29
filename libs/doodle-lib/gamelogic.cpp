@@ -14,11 +14,56 @@ GameLogic *GameLogic::GetInstance() {
 
 void GameLogic::step() {
   // move player:
+  for (auto &it : playerEntityByBody_) {
+    if (it.second->getCurrentMove() == MoveType::NoOp)
+      continue;
 
+    b2Vec2 currentVel = it.first->GetLinearVelocity();
+    b2Vec2 desiredVel{};
+
+    switch (it.second->getCurrentMove()) {
+    case MoveType::Jump:
+      desiredVel.y += 5;
+      break;
+    case MoveType::Left:
+      desiredVel.x -= 3;
+      break;
+    case MoveType::Right:
+      desiredVel.x += 3;
+      break;
+    default:
+      break;
+    }
+    auto velChange = desiredVel - currentVel;
+    auto impulse = it.first->GetMass() * velChange;
+    it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
+
+    it.second->resetCurrentMove();
+  }
+
+  // global physics step:
   world_.Step(GameLogic::TimeStep, velocityIterations_, positionIterations_);
 }
 
-GameLogic::GameLogic() {}
+GameLogic::GameLogic() : QObject(nullptr) {}
+
+void GameLogic::propagatePressedKey(int key) {
+  for (auto &it : playerEntityByBody_) {
+    switch (key) {
+    case Qt::Key_D:
+      it.second->setCurrentMove(MoveType::Right);
+      break;
+    case Qt::Key_A:
+      it.second->setCurrentMove(MoveType::Left);
+      break;
+    case Qt::Key_Space:
+      it.second->setCurrentMove(MoveType::Jump);
+      break;
+    default:
+      break;
+    }
+  }
+}
 
 std::shared_ptr<Entity> GameLogic::getEnityByBody(b2Body *body) {
   // return std::make_shared<Entity>(entityByBody_[body]);
@@ -37,24 +82,14 @@ void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
   }
 
   b2Body *body = world_.CreateBody(&entity->physicsInfo().bodyDef);
-
-  // qDebug() << body;
-
-  // qDebug() << entity->fixtureDef().density;
   body->CreateFixture(&entity->physicsInfo().fixtureDef);
 
-  qDebug() << body;
-
   if (dynamic_cast<PlayerEntity *>(entity.get())) {
-    qDebug() << "it is a PlayerEntity!";
-    auto castedPointer = dynamic_cast<PlayerEntity *>(entity.release());
-    auto playerEntity = std::unique_ptr<PlayerEntity>(castedPointer);
+    auto castedPointer = dynamic_cast<PlayerEntity *>(entity.get());
+    auto playerEntity = std::shared_ptr<PlayerEntity>(castedPointer);
 
     playerEntityByBody_[body] = std::move(playerEntity);
-    return;
   }
-
-  qDebug() << body;
 
   basicEntityByBody_[body] = std::move(entity);
 }

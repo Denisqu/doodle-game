@@ -1,6 +1,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
+#include <QObject>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -12,7 +13,9 @@ class Entity;
 class EntityRenderer;
 class PlayerEntity;
 
-class GameLogic {
+class GameLogic : public QObject {
+  Q_OBJECT
+
 public:
   static GameLogic *GetInstance();
   void
@@ -25,6 +28,9 @@ public:
   void step();
 
   static constexpr double TimeStep = 1 / 60.f;
+
+public slots:
+  void propagatePressedKey(int key);
 
 private:
   explicit GameLogic();

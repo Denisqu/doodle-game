@@ -3,7 +3,7 @@
 
 #include "entity.h"
 
-enum class MoveType { Right, Left, Jump };
+enum class MoveType { NoOp, Right, Left, Jump };
 enum class ControllerType { Human, NeuralNetwork };
 
 class PlayerEntity : public Entity {
@@ -11,28 +11,13 @@ public:
   PlayerEntity(std::unique_ptr<EntityPhysicsInfo> physicsInfo,
                ControllerType controllerType);
 
-  void move(MoveType mType);
+  void setCurrentMove(MoveType type);
+  const MoveType &getCurrentMove() const;
+  void resetCurrentMove();
 
 private:
   ControllerType controllerType_;
+  MoveType currentMove_ = MoveType::NoOp;
 };
-
-/*
- * Reference:
- *
- * b2Vec2 vel = body->GetLinearVelocity();
-float desiredVel = 0;
-switch ( moveState )
-{
-  case MS_LEFT:  desiredVel = -5; break;
-  case MS_STOP:  desiredVel =  0; break;
-  case MS_RIGHT: desiredVel =  5; break;
-}
-float velChange = desiredVel - vel.x;
-float impulse = body->GetMass() * velChange; //disregard time factor
-body->ApplyLinearImpulse( b2Vec2(impulse,0), body->GetWorldCenter() );
- *
- *
- */
 
 #endif // PLAYERENTITY_H

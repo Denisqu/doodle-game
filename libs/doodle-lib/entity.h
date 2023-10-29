@@ -15,6 +15,7 @@ struct EntityPhysicsInfo {
                     float density, float friction) {
     bodyDef.position = startPos;
     bodyDef.type = type;
+    bodyDef.fixedRotation = true;
     polygonShape.SetAsBox(dims.x / 2.f, dims.y / 2.f);
     fixtureDef.density = density;
     fixtureDef.friction = friction;

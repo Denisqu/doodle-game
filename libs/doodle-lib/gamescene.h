@@ -17,6 +17,12 @@ public:
   explicit GameScene(QObject *parent = nullptr);
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
 
+signals:
+  void propagatePressedKey(int key);
+
+protected:
+  void keyPressEvent(QKeyEvent *event) override;
+
 private:
   QTimer *mUpdateTimer;
   GameLogic *logic_;

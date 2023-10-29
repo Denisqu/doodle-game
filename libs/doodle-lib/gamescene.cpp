@@ -7,8 +7,9 @@
 #include "entity.h"
 #include "entityconstructor.h"
 #include "gamelogic.h"
+#include "playerentity.h"
 #include <QDebug>
-
+#include <QKeyEvent>
 /** We need this to easily convert between pixel and real-world coordinates*/
 // static const float SCALE = 30.f;
 
@@ -114,9 +115,12 @@ GameScene::GameScene(QObject *parent)
     // нужно не только создавать rect, но и добавлять в таблицу [Entity,
     // QGraphicsRectItem *]
 
-    entityToRectItemMap[&entity] =
-        this->addRect(QRectF(0, 0, entity.boxDims().x * this->sceneScale,
-                             entity.boxDims().y * this->sceneScale));
+    connect(this, &GameScene::propagatePressedKey, logic_,
+            &GameLogic::propagatePressedKey);
+    auto rect = QRectF(0, 0, entity.boxDims().x * this->sceneScale,
+                       entity.boxDims().y * this->sceneScale);
+    rect.moveCenter(QPoint(0, 0));
+    entityToRectItemMap[&entity] = this->addRect(rect);
   });
 
   /*
@@ -156,17 +160,24 @@ GameScene::GameScene(QObject *parent)
   auto dynamicBox_2 = std::unique_ptr<Entity>(
       EntityConstructor::CreateDynamicBox(b2Vec2(2, 1), b2Vec2(50, 50)));
   auto staticBox_0 = std::unique_ptr<Entity>(
-      EntityConstructor::CreateStaticBox(b2Vec2(100, 0.25f), b2Vec2(50, 0)));
+      EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
+  auto playerEntity = std::unique_ptr<Entity>(static_cast<Entity *>(
+      EntityConstructor::CreatePlayerEntity(b2Vec2(0.5f, 2), b2Vec2(50, 1))));
 
   logic_->addEntity(std::move(dynamicBox_0));
   logic_->addEntity(std::move(dynamicBox_1));
   logic_->addEntity(std::move(dynamicBox_2));
   logic_->addEntity(std::move(staticBox_0));
+  logic_->addEntity(std::move(playerEntity));
   mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
 
 QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
   return entityToRectItemMap[&entity];
+}
+
+void GameScene::keyPressEvent(QKeyEvent *event) {
+  emit propagatePressedKey(event->key());
 }
 
 void GameScene::update() {
@@ -179,14 +190,16 @@ void GameScene::update() {
 
     if (entity->renderInfo().isRenderingCollider) {
 
-      qDebug() << "rendering this entity: " << entity.get()
-               << "with this rect: " << this->getRectItemByEntity(*entity)
-               << "its real pos:" << body->GetPosition().x << " "
-               << body->GetPosition().y;
+      /*
+    qDebug() << "rendering this entity: " << entity.get()
+             << "with this rect: " << this->getRectItemByEntity(*entity)
+             << "its real pos:" << body->GetPosition().x << " "
+             << body->GetPosition().y;
+      */
 
       this->getRectItemByEntity(*entity)->setPos(
-          (body->GetPosition().x - 1 * entity->boxDims().x / 2) * sceneScale,
-          (body->GetPosition().y - 1 * entity->boxDims().y / 2) * sceneScale);
+          (body->GetPosition().x - 0 * entity->boxDims().x / 2) * sceneScale,
+          (body->GetPosition().y - 0 * entity->boxDims().y / 2) * sceneScale);
     }
   });
 }

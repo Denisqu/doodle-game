@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
   doodlelib::View view;
   view.setDragMode(QGraphicsView::NoDrag);
-  QRectF rect(QPointF(0, 0), QPointF(5000, 1000));
+  QRectF rect(QPointF(0, 0), QPointF(3000, 1000));
   view.fitInView(rect);
   view.setSceneRect(rect);
   view.show();
