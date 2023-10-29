@@ -178,12 +178,12 @@ void GameScene::update() {
     auto entity = this->logic_->getEnityByBody(body);
 
     if (entity->renderInfo().isRenderingCollider) {
-      /*
+
       qDebug() << "rendering this entity: " << entity.get()
                << "with this rect: " << this->getRectItemByEntity(*entity)
                << "its real pos:" << body->GetPosition().x << " "
                << body->GetPosition().y;
-      */
+
       this->getRectItemByEntity(*entity)->setPos(
           (body->GetPosition().x - 1 * entity->boxDims().x / 2) * sceneScale,
           (body->GetPosition().y - 1 * entity->boxDims().y / 2) * sceneScale);

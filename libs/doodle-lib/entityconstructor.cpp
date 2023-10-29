@@ -1,40 +1,21 @@
 #include "entityconstructor.h"
 #include "entity.h"
+#include <memory>
 
 Entity *EntityConstructor::CreateStaticBox(b2Vec2 dims, b2Vec2 pos) {
-  auto bodyDef = new b2BodyDef();
-  bodyDef->position = b2Vec2(pos.x, pos.y);
-  bodyDef->type = b2_staticBody;
+  auto physicsInfo =
+      std::make_unique<EntityPhysicsInfo>(dims, pos, b2_staticBody, 1.f, 0.7f);
 
-  auto polygonShape = new b2PolygonShape();
-  polygonShape->SetAsBox(dims.x / 2.f, dims.y / 2.f);
-
-  auto fixtureDef = new b2FixtureDef();
-  fixtureDef->density = 1.f;
-  fixtureDef->friction = 0.7f;
-  fixtureDef->shape = polygonShape;
-
-  auto entity = new Entity(std::unique_ptr<b2BodyDef>(bodyDef),
-                           std::unique_ptr<b2FixtureDef>(fixtureDef), dims);
+  auto entity = new Entity(std::move(physicsInfo));
 
   return entity;
 }
 
 Entity *EntityConstructor::CreateDynamicBox(b2Vec2 dims, b2Vec2 pos) {
-  auto bodyDef = new b2BodyDef();
-  bodyDef->position = b2Vec2(pos.x, pos.y);
-  bodyDef->type = b2_dynamicBody;
+  auto physicsInfo =
+      std::make_unique<EntityPhysicsInfo>(dims, pos, b2_dynamicBody, 1.f, 0.7f);
 
-  auto polygonShape = new b2PolygonShape();
-  polygonShape->SetAsBox(dims.x / 2.f, dims.y / 2.f);
-
-  auto fixtureDef = new b2FixtureDef();
-  fixtureDef->density = 1.f;
-  fixtureDef->friction = 0.7f;
-  fixtureDef->shape = polygonShape;
-
-  auto entity = new Entity(std::unique_ptr<b2BodyDef>(bodyDef),
-                           std::unique_ptr<b2FixtureDef>(fixtureDef), dims);
+  auto entity = new Entity(std::move(physicsInfo));
 
   return entity;
 }

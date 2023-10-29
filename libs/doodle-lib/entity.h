@@ -9,26 +9,37 @@ struct RenderInfo {
   bool isRenderingCollider = true;
 };
 
+struct EntityPhysicsInfo {
+
+  EntityPhysicsInfo(b2Vec2 dims, b2Vec2 startPos, b2BodyType type,
+                    float density, float friction) {
+    bodyDef.position = startPos;
+    bodyDef.type = type;
+    polygonShape.SetAsBox(dims.x / 2.f, dims.y / 2.f);
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.shape = &polygonShape;
+    boundingBoxDims = dims;
+  }
+
+  b2BodyDef bodyDef;
+  b2PolygonShape polygonShape;
+  b2FixtureDef fixtureDef;
+  b2Vec2 boundingBoxDims;
+};
+
 class Entity {
 public:
-  Entity(std::unique_ptr<b2BodyDef> bodyDef,
-         std::unique_ptr<b2FixtureDef> fixtureDef, b2Vec2 boxDims);
-
+  Entity(std::unique_ptr<EntityPhysicsInfo> physicsInfo);
   const std::shared_ptr<b2Body> body() const;
   const RenderInfo &renderInfo() const;
-  const b2PolygonShape &pPolygonShape() const;
   const b2Vec2 &boxDims() const;
-  const b2BodyDef &bodyDef() const;
-  const b2FixtureDef &fixtureDef() const;
-
   virtual ~Entity() = default;
 
+  const EntityPhysicsInfo &physicsInfo() const;
+
 private:
-  const std::unique_ptr<b2BodyDef> pBodyDef_;
-  const std::unique_ptr<b2FixtureDef> pFixtureDef_;
-  const std::unique_ptr<b2PolygonShape> pPolygonShape_;
-  // const std::shared_ptr<b2Body> pBody_;
-  const b2Vec2 boxDims_;
+  std::unique_ptr<EntityPhysicsInfo> physicsInfo_;
 
   RenderInfo renderInfo_;
 };

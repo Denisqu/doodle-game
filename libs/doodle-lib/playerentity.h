@@ -8,12 +8,13 @@ enum class ControllerType { Human, NeuralNetwork };
 
 class PlayerEntity : public Entity {
 public:
-  PlayerEntity(std::unique_ptr<b2BodyDef> bodyDef,
-               std::unique_ptr<b2FixtureDef> fixtureDef, b2Vec2 boxDims);
+  PlayerEntity(std::unique_ptr<EntityPhysicsInfo> physicsInfo,
+               ControllerType controllerType);
 
   void move(MoveType mType);
 
 private:
+  ControllerType controllerType_;
 };
 
 /*

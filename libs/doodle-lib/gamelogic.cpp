@@ -2,6 +2,7 @@
 #include "box2d/box2d.h"
 #include "entity.h"
 #include "playerentity.h"
+#include <QDebug>
 
 GameLogic *GameLogic::instance_ = nullptr;
 
@@ -35,16 +36,25 @@ void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
     callback(*entity);
   }
 
-  b2Body *body = world_.CreateBody(&entity->bodyDef());
-  body->CreateFixture(&entity->fixtureDef());
+  b2Body *body = world_.CreateBody(&entity->physicsInfo().bodyDef);
+
+  // qDebug() << body;
+
+  // qDebug() << entity->fixtureDef().density;
+  body->CreateFixture(&entity->physicsInfo().fixtureDef);
+
+  qDebug() << body;
 
   if (dynamic_cast<PlayerEntity *>(entity.get())) {
+    qDebug() << "it is a PlayerEntity!";
     auto castedPointer = dynamic_cast<PlayerEntity *>(entity.release());
     auto playerEntity = std::unique_ptr<PlayerEntity>(castedPointer);
 
     playerEntityByBody_[body] = std::move(playerEntity);
     return;
   }
+
+  qDebug() << body;
 
   basicEntityByBody_[body] = std::move(entity);
 }
