@@ -24,12 +24,15 @@ void GameLogic::step() {
     switch (it.second->getCurrentMove()) {
     case MoveType::Jump:
       desiredVel.y += 5;
+      desiredVel.x = currentVel.x;
       break;
     case MoveType::Left:
       desiredVel.x -= 3;
+      desiredVel.y = currentVel.y;
       break;
     case MoveType::Right:
       desiredVel.x += 3;
+      desiredVel.y = currentVel.y;
       break;
     default:
       break;
