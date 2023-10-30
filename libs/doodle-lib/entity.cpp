@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "box2d/box2d.h"
 
 /*
 Entity::Entity(b2BodyDef bodyDef, b2FixtureDef fixtureDef, b2Vec2 boxDims)
