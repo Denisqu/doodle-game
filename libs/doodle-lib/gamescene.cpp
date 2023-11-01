@@ -161,8 +161,9 @@ GameScene::GameScene(QObject *parent)
       EntityConstructor::CreateDynamicBox(b2Vec2(2, 1), b2Vec2(50, 50)));
   auto staticBox_0 = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
-  auto playerEntity = std::unique_ptr<Entity>(static_cast<Entity *>(
-      EntityConstructor::CreatePlayerEntity(b2Vec2(0.5f, 2), b2Vec2(50, 1))));
+  auto playerEntity = std::unique_ptr<Entity>(
+      static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
+          b2Vec2(0.5f, 2), b2Vec2(50, 1), ControllerType::Human)));
 
   logic_->addEntity(std::move(dynamicBox_0));
   logic_->addEntity(std::move(dynamicBox_1));

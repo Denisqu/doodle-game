@@ -84,8 +84,11 @@ void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
     callback(*entity);
   }
 
-  b2Body *body = world_.CreateBody(&entity->physicsInfo().bodyDef);
-  body->CreateFixture(&entity->physicsInfo().fixtureDef);
+  b2Body *body = world_.CreateBody(entity->physicsInfo().bodyDef.get());
+
+  for (const auto &pair : entity->physicsInfo().fixtureShapeDefs) {
+    body->CreateFixture(&pair.first);
+  }
 
   if (dynamic_cast<PlayerEntity *>(entity.get())) {
     auto castedPointer = dynamic_cast<PlayerEntity *>(entity.get());
