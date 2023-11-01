@@ -10,9 +10,8 @@ struct RenderInfo {
   bool isRenderingCollider = true;
 };
 
-enum class BodyUserData : unsigned int { Platform = 0, Player, Enemy, Reward };
-
-enum class FixtureType : unsigned int { Default = 0, FootSensor };
+enum class BodyUserData : unsigned int { Default = 0, Player, Enemy, Reward };
+enum class FixtureUserData : unsigned int { Default = 0, FootSensor };
 
 struct EntityPhysicsInfo {
 
@@ -35,20 +34,30 @@ struct EntityPhysicsInfo {
   */
 
   EntityPhysicsInfo(
-      b2Vec2 dims, BodyUserData buData, std::unique_ptr<b2BodyDef> &&body,
-      std::vector<std::pair<b2FixtureDef, b2PolygonShape>> &&fixtureShapeDefs)
-      : bodyDef(std::move(body)), fixtureShapeDefs(std::move(fixtureShapeDefs)),
-        boundingBoxDims(dims) {
-    // connect shape to fixture after initialization
-    for (auto &pair : this->fixtureShapeDefs) {
-      pair.first.shape = &pair.second;
+      b2Vec2 dims, std::pair<b2BodyDef, BodyUserData> &&body,
+      std::vector<std::tuple<b2FixtureDef, b2PolygonShape, FixtureUserData>>
+          &&fixtureShapeDefs)
+      : bodyDefPair(std::move(body)),
+        fixtureShapeDefs(std::move(fixtureShapeDefs)), boundingBoxDims(dims) {
+
+    for (auto &tuple : this->fixtureShapeDefs) {
+      // connect shape to fixture after initialization
+      std::get<0>(tuple).shape = &std::get<1>(tuple);
+      // connect fixture user data to fixture
+      auto fixtureUserData = b2FixtureUserData();
+      fixtureUserData.pointer = (uintptr_t)&std::get<2>(tuple);
     }
+
+    auto bodyUserData = b2BodyUserData();
+    bodyUserData.pointer = (uintptr_t)&bodyDefPair.second;
+    bodyDefPair.first.userData = bodyUserData;
   }
 
-  std::unique_ptr<b2BodyDef> bodyDef;
-  std::vector<std::pair<b2FixtureDef, b2PolygonShape>> fixtureShapeDefs;
+  std::pair<b2BodyDef, BodyUserData> bodyDefPair;
+  std::vector<std::tuple<b2FixtureDef, b2PolygonShape, FixtureUserData>>
+      fixtureShapeDefs;
   const b2Vec2 boundingBoxDims;
-  BodyUserData entityType = BodyUserData::Platform;
+  BodyUserData bodyUserData = BodyUserData::Default;
 };
 
 class Entity {
