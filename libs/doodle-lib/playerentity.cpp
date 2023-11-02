@@ -12,6 +12,12 @@ const MoveType &PlayerEntity::getCurrentMove() const { return currentMove_; }
 
 void PlayerEntity::resetCurrentMove() { currentMove_ = MoveType::NoOp; }
 
+void PlayerEntity::increaseFootContacts() { ++footContactsCount_; }
+
+void PlayerEntity::decreaseFootContacts() { --footContactsCount_; }
+
+int PlayerEntity::getFootContactsCount() { return footContactsCount_; }
+
 /*
  * Reference:
  *

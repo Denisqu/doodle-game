@@ -47,6 +47,8 @@ private:
   const int positionIterations_ = 3;
   const b2Vec2 gravity_ = b2Vec2(0.0, -10.0f);
   b2World world_ = b2World(gravity_);
+
+  friend class ContactListener;
 };
 
 #endif // GAMELOGIC_H

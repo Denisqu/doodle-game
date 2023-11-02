@@ -1,5 +1,6 @@
 #include "gamelogic.h"
 #include "box2d/box2d.h"
+#include "contactlistener.h"
 #include "entity.h"
 #include "playerentity.h"
 #include <QDebug>
@@ -23,6 +24,11 @@ void GameLogic::step() {
 
     switch (it.second->getCurrentMove()) {
     case MoveType::Jump:
+      if (it.second->getFootContactsCount() == 0) {
+        desiredVel.y = currentVel.y;
+        desiredVel.x = currentVel.x;
+        break;
+      }
       desiredVel.y += 5;
       desiredVel.x = currentVel.x;
       break;
@@ -48,7 +54,9 @@ void GameLogic::step() {
   world_.Step(GameLogic::TimeStep, velocityIterations_, positionIterations_);
 }
 
-GameLogic::GameLogic() : QObject(nullptr) {}
+GameLogic::GameLogic() : QObject(nullptr) {
+  world_.SetContactListener(new ContactListener());
+}
 
 void GameLogic::propagatePressedKey(int key) {
   for (auto &it : playerEntityByBody_) {
@@ -88,13 +96,14 @@ void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
   for (const auto &tuple : entity->physicsInfo().fixtureShapeDefs) {
     body->CreateFixture(&std::get<0>(tuple));
   }
-  basicEntityByBody_[body] = std::move(entity);
 
   if (dynamic_cast<PlayerEntity *>(entity.get())) {
     auto castedPointer = dynamic_cast<PlayerEntity *>(entity.get());
     auto playerEntity = std::shared_ptr<PlayerEntity>(castedPointer);
     playerEntityByBody_[body] = std::move(playerEntity);
   }
+
+  basicEntityByBody_[body] = std::move(entity);
 }
 
 void GameLogic::addOnAddEntityCallback(

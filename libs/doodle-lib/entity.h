@@ -46,6 +46,7 @@ struct EntityPhysicsInfo {
       // connect fixture user data to fixture
       auto fixtureUserData = b2FixtureUserData();
       fixtureUserData.pointer = (uintptr_t)&std::get<2>(tuple);
+      std::get<0>(tuple).userData = fixtureUserData;
     }
 
     auto bodyUserData = b2BodyUserData();

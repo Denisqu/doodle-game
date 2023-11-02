@@ -15,7 +15,7 @@ createBase(b2Vec2 dims, b2Vec2 pos) {
   bodyDef.fixedRotation = true;
   auto bodyUserData = BodyUserData::Default;
 
-  auto fixtureTuple =
+  auto fixtureTupleVector =
       std::vector<std::tuple<b2FixtureDef, b2PolygonShape, FixtureUserData>>();
 
   auto mainShape = b2PolygonShape();
@@ -23,9 +23,10 @@ createBase(b2Vec2 dims, b2Vec2 pos) {
   auto mainFixtureDef = b2FixtureDef();
   mainFixtureDef.density = 1.0f;
   mainFixtureDef.friction = 0.7f;
-  fixtureTuple.push_back({mainFixtureDef, mainShape, FixtureUserData::Default});
+  fixtureTupleVector.push_back(
+      {mainFixtureDef, mainShape, FixtureUserData::Default});
 
-  return {{bodyDef, bodyUserData}, fixtureTuple};
+  return {{bodyDef, bodyUserData}, fixtureTupleVector};
 }
 
 } // namespace
@@ -33,10 +34,10 @@ createBase(b2Vec2 dims, b2Vec2 pos) {
 Entity *EntityConstructor::CreateStaticBox(b2Vec2 dims, b2Vec2 pos) {
   auto base = createBase(dims, pos);
   auto bodyDef = std::move(std::get<0>(base));
-  auto fixtureShapeDefs = std::move(std::get<1>(base));
+  auto fixtureTupleVector = std::move(std::get<1>(base));
 
   auto physicsInfo = std::make_unique<EntityPhysicsInfo>(
-      dims, std::move(bodyDef), std::move(fixtureShapeDefs));
+      dims, std::move(bodyDef), std::move(fixtureTupleVector));
   auto entity = new Entity(std::move(physicsInfo));
 
   return entity;
@@ -46,10 +47,10 @@ Entity *EntityConstructor::CreateDynamicBox(b2Vec2 dims, b2Vec2 pos) {
   auto base = createBase(dims, pos);
   auto bodyDef = std::move(std::get<0>(base));
   bodyDef.first.type = b2_dynamicBody;
-  auto fixtureShapeDefs = std::move(std::get<1>(base));
+  auto fixtureTupleVector = std::move(std::get<1>(base));
 
   auto physicsInfo = std::make_unique<EntityPhysicsInfo>(
-      dims, std::move(bodyDef), std::move(fixtureShapeDefs));
+      dims, std::move(bodyDef), std::move(fixtureTupleVector));
   auto entity = new Entity(std::move(physicsInfo));
 
   return entity;
@@ -62,12 +63,19 @@ EntityConstructor::CreatePlayerEntity(b2Vec2 dims, b2Vec2 pos,
   std::get<0>(base).second = BodyUserData::Player;
   auto bodyDef = std::move(std::get<0>(base));
   bodyDef.first.type = b2_dynamicBody;
-  auto fixtureShapeDefs = std::move(std::get<1>(base));
+  auto fixtureTupleVector = std::move(std::get<1>(base));
 
-  // TODO: ADD FIXTURE DEF FOR FOOT SENSOR
+  // foot sensor fixture
+  auto footSensorFixtureDef = b2FixtureDef();
+  footSensorFixtureDef.isSensor = true;
+  auto footSensorShape = b2PolygonShape();
+  footSensorShape.SetAsBox(0.01, 0.01, b2Vec2(0, -dims.y / 2), 0);
+  auto footSensorFixtureUserData = FixtureUserData::FootSensor;
+  fixtureTupleVector.push_back(
+      {footSensorFixtureDef, footSensorShape, footSensorFixtureUserData});
 
   auto physicsInfo = std::make_unique<EntityPhysicsInfo>(
-      dims, std::move(bodyDef), std::move(fixtureShapeDefs));
+      dims, std::move(bodyDef), std::move(fixtureTupleVector));
   auto entity = new PlayerEntity(std::move(physicsInfo), controllerType);
 
   return entity;
