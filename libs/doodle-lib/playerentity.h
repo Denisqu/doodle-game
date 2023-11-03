@@ -2,6 +2,8 @@
 #define PLAYERENTITY_H
 
 #include "entity.h"
+#include <QDateTime>
+#include <QObject>
 
 enum class MoveType { NoOp, Right, Left };
 enum class ControllerType { Human, NeuralNetwork };
@@ -17,11 +19,18 @@ public:
   void increaseFootContacts();
   void decreaseFootContacts();
   int getFootContactsCount();
+  qint64 getLastJumpingTime() const;
+  void setLastJumpingTime(qint64 newLastJumpingTime);
+  qint64 getJumpTimeoutMs() const;
+  void setJumpTimeoutMs(qint64 newJumpTimeoutMs);
+  bool canJump();
 
 private:
   ControllerType controllerType_;
   MoveType currentMove_ = MoveType::NoOp;
   unsigned int footContactsCount_ = 0;
+  qint64 lastJumpingTimeMs = QDateTime::currentMSecsSinceEpoch();
+  qint64 jumpTimeoutMs = 100;
 };
 
 #endif // PLAYERENTITY_H

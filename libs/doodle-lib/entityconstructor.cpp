@@ -13,7 +13,7 @@ createBase(b2Vec2 dims, b2Vec2 pos) {
   bodyDef.position = pos;
   bodyDef.type = b2_staticBody;
   bodyDef.fixedRotation = true;
-  auto bodyUserData = BodyUserData::Default;
+  auto bodyUserData = BodyUserData::Platform;
 
   auto fixtureTupleVector =
       std::vector<std::tuple<b2FixtureDef, b2PolygonShape, FixtureUserData>>();
@@ -33,11 +33,11 @@ createBase(b2Vec2 dims, b2Vec2 pos) {
 
 Entity *EntityConstructor::CreateStaticBox(b2Vec2 dims, b2Vec2 pos) {
   auto base = createBase(dims, pos);
-  auto bodyDef = std::move(std::get<0>(base));
+  auto bodyDefTuple = std::move(std::get<0>(base));
   auto fixtureTupleVector = std::move(std::get<1>(base));
 
   auto physicsInfo = std::make_unique<EntityPhysicsInfo>(
-      dims, std::move(bodyDef), std::move(fixtureTupleVector));
+      dims, std::move(bodyDefTuple), std::move(fixtureTupleVector));
   auto entity = new Entity(std::move(physicsInfo));
 
   return entity;
@@ -45,12 +45,12 @@ Entity *EntityConstructor::CreateStaticBox(b2Vec2 dims, b2Vec2 pos) {
 
 Entity *EntityConstructor::CreateDynamicBox(b2Vec2 dims, b2Vec2 pos) {
   auto base = createBase(dims, pos);
-  auto bodyDef = std::move(std::get<0>(base));
-  bodyDef.first.type = b2_dynamicBody;
+  auto bodyDefTuple = std::move(std::get<0>(base));
+  bodyDefTuple.first.type = b2_dynamicBody;
   auto fixtureTupleVector = std::move(std::get<1>(base));
 
   auto physicsInfo = std::make_unique<EntityPhysicsInfo>(
-      dims, std::move(bodyDef), std::move(fixtureTupleVector));
+      dims, std::move(bodyDefTuple), std::move(fixtureTupleVector));
   auto entity = new Entity(std::move(physicsInfo));
 
   return entity;

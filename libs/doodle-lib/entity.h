@@ -10,7 +10,7 @@ struct RenderInfo {
   bool isRenderingCollider = true;
 };
 
-enum class BodyUserData : unsigned int { Default = 0, Player, Enemy, Reward };
+enum class BodyUserData : unsigned int { Default = 0, Player, Platform };
 enum class FixtureUserData : unsigned int { Default = 0, FootSensor };
 
 struct EntityPhysicsInfo {

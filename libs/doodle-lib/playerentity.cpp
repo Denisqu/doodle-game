@@ -18,6 +18,25 @@ void PlayerEntity::decreaseFootContacts() { --footContactsCount_; }
 
 int PlayerEntity::getFootContactsCount() { return footContactsCount_; }
 
+qint64 PlayerEntity::getLastJumpingTime() const { return lastJumpingTimeMs; }
+
+void PlayerEntity::setLastJumpingTime(qint64 newLastJumpingTime) {
+  lastJumpingTimeMs = newLastJumpingTime;
+}
+
+qint64 PlayerEntity::getJumpTimeoutMs() const { return jumpTimeoutMs; }
+
+void PlayerEntity::setJumpTimeoutMs(qint64 newJumpTimeoutMs) {
+  jumpTimeoutMs = newJumpTimeoutMs;
+}
+
+bool PlayerEntity::canJump() {
+  bool isContactingGround = getFootContactsCount() != 0;
+  bool isTimeoutDone = (QDateTime::currentMSecsSinceEpoch() - jumpTimeoutMs) >=
+                       lastJumpingTimeMs;
+  return isContactingGround && isTimeoutDone;
+}
+
 /*
  * Reference:
  *

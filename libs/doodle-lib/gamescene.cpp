@@ -161,6 +161,9 @@ GameScene::GameScene(QObject *parent)
       EntityConstructor::CreateDynamicBox(b2Vec2(2, 1), b2Vec2(50, 50)));
   auto staticBox_0 = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
+  auto staticBox_1 = std::unique_ptr<Entity>(
+      EntityConstructor::CreateStaticBox(b2Vec2(2.0f, 0.5f), b2Vec2(25, 4)));
+
   auto playerEntity = std::unique_ptr<Entity>(
       static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
           b2Vec2(0.5f, 2), b2Vec2(50, 1), ControllerType::Human)));
@@ -169,6 +172,7 @@ GameScene::GameScene(QObject *parent)
   logic_->addEntity(std::move(dynamicBox_1));
   logic_->addEntity(std::move(dynamicBox_2));
   logic_->addEntity(std::move(staticBox_0));
+  logic_->addEntity(std::move(staticBox_1));
   logic_->addEntity(std::move(playerEntity));
   mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
@@ -182,7 +186,7 @@ void GameScene::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameScene::update() {
-  // update physics
+  // update logic
   logic_->step();
 
   // render graphics on QGraphicsScene

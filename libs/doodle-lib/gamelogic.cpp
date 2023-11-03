@@ -3,6 +3,7 @@
 #include "contactlistener.h"
 #include "entity.h"
 #include "playerentity.h"
+#include <QDateTime>
 #include <QDebug>
 
 GameLogic *GameLogic::instance_ = nullptr;
@@ -19,11 +20,12 @@ void GameLogic::step() {
 
     b2Vec2 currentVel = it.first->GetLinearVelocity();
     b2Vec2 desiredVel{};
-    bool isJumping = it.second->getFootContactsCount() != 0;
+
+    bool isJumping = it.second->canJump();
+    if (isJumping)
+      it.second->setLastJumpingTime(QDateTime::currentMSecsSinceEpoch());
 
     switch (it.second->getCurrentMove()) {
-    case MoveType::NoOp:
-      break;
     case MoveType::Left:
       desiredVel.x -= 3;
       desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
@@ -33,6 +35,8 @@ void GameLogic::step() {
       desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
       break;
     default:
+      desiredVel.x = currentVel.x;
+      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
       break;
     }
 
@@ -42,8 +46,8 @@ void GameLogic::step() {
     auto velChange = desiredVel - currentVel;
     auto impulse = it.first->GetMass() * velChange;
 
-    qDebug() << "deserideVel = " << desiredVel.x << " " << desiredVel.y;
-    qDebug() << "currentVel = " << currentVel.x << " " << currentVel.y;
+    // qDebug() << "deserideVel = " << desiredVel.x << " " << desiredVel.y;
+    // qDebug() << "currentVel = " << currentVel.x << " " << currentVel.y;
 
     it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
 
