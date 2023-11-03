@@ -3,7 +3,7 @@
 
 #include "entity.h"
 
-enum class MoveType { NoOp, Right, Left, Jump };
+enum class MoveType { NoOp, Right, Left };
 enum class ControllerType { Human, NeuralNetwork };
 
 class PlayerEntity : public Entity {

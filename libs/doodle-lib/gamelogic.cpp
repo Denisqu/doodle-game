@@ -16,35 +16,35 @@ GameLogic *GameLogic::GetInstance() {
 void GameLogic::step() {
   // move player:
   for (auto &it : playerEntityByBody_) {
-    if (it.second->getCurrentMove() == MoveType::NoOp)
-      continue;
 
     b2Vec2 currentVel = it.first->GetLinearVelocity();
     b2Vec2 desiredVel{};
+    bool isJumping = it.second->getFootContactsCount() != 0;
 
     switch (it.second->getCurrentMove()) {
-    case MoveType::Jump:
-      if (it.second->getFootContactsCount() == 0) {
-        desiredVel.y = currentVel.y;
-        desiredVel.x = currentVel.x;
-        break;
-      }
-      desiredVel.y += 5;
-      desiredVel.x = currentVel.x;
+    case MoveType::NoOp:
       break;
     case MoveType::Left:
       desiredVel.x -= 3;
-      desiredVel.y = currentVel.y;
+      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
       break;
     case MoveType::Right:
       desiredVel.x += 3;
-      desiredVel.y = currentVel.y;
+      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
       break;
     default:
       break;
     }
+
+    if (desiredVel.x == 0 && desiredVel.y == 0)
+      continue;
+
     auto velChange = desiredVel - currentVel;
     auto impulse = it.first->GetMass() * velChange;
+
+    qDebug() << "deserideVel = " << desiredVel.x << " " << desiredVel.y;
+    qDebug() << "currentVel = " << currentVel.x << " " << currentVel.y;
+
     it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
 
     it.second->resetCurrentMove();
@@ -66,9 +66,6 @@ void GameLogic::propagatePressedKey(int key) {
       break;
     case Qt::Key_A:
       it.second->setCurrentMove(MoveType::Left);
-      break;
-    case Qt::Key_Space:
-      it.second->setCurrentMove(MoveType::Jump);
       break;
     default:
       break;
