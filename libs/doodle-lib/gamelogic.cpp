@@ -21,22 +21,22 @@ void GameLogic::step() {
     b2Vec2 currentVel = it.first->GetLinearVelocity();
     b2Vec2 desiredVel{};
 
-    bool isJumping = it.second->canJump();
+    bool isJumping = it.second->canJump() && currentVel.y == 0;
     if (isJumping)
       it.second->setLastJumpingTime(QDateTime::currentMSecsSinceEpoch());
 
     switch (it.second->getCurrentMove()) {
     case MoveType::Left:
-      desiredVel.x -= 3;
-      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
+      desiredVel.x -= 6;
+      desiredVel.y = currentVel.y + (isJumping ? 10 : 0);
       break;
     case MoveType::Right:
-      desiredVel.x += 3;
-      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
+      desiredVel.x += 6;
+      desiredVel.y = currentVel.y + (isJumping ? 10 : 0);
       break;
     default:
       desiredVel.x = currentVel.x;
-      desiredVel.y = currentVel.y + (isJumping ? 7 : 0);
+      desiredVel.y = currentVel.y + (isJumping ? 10 : 0);
       break;
     }
 

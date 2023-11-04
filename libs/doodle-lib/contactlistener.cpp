@@ -3,6 +3,7 @@
 #include "gamelogic.h"
 #include "playerentity.h"
 #include <QDebug>
+#include <QTimer>
 
 ContactListener::ContactListener() {}
 
@@ -54,7 +55,7 @@ void ContactListener::handlePlayerBeginContact(b2Contact *contact) {
   auto body = contact->GetFixtureA()->GetBody();
 
   if (*bodyUserData == BodyUserData::Player &&
-      *fixtureUserData == FixtureUserData::FootSensor) {
+      *fixtureUserData == FixtureUserData::FootSensor && contact->IsEnabled()) {
     auto playerEntity = GameLogic::GetInstance()->playerEntityByBody_[body];
     playerEntity->increaseFootContacts();
     return;
@@ -67,7 +68,7 @@ void ContactListener::handlePlayerBeginContact(b2Contact *contact) {
   body = contact->GetFixtureB()->GetBody();
 
   if (*bodyUserData == BodyUserData::Player &&
-      *fixtureUserData == FixtureUserData::FootSensor) {
+      *fixtureUserData == FixtureUserData::FootSensor && contact->IsEnabled()) {
     auto playerEntity = GameLogic::GetInstance()->playerEntityByBody_[body];
     playerEntity->increaseFootContacts();
     return;
@@ -82,7 +83,7 @@ void ContactListener::handlePlayerEndContact(b2Contact *contact) {
   auto body = contact->GetFixtureA()->GetBody();
 
   if (*bodyUserData == BodyUserData::Player &&
-      *fixtureUserData == FixtureUserData::FootSensor) {
+      *fixtureUserData == FixtureUserData::FootSensor && contact->IsEnabled()) {
     auto playerEntity = GameLogic::GetInstance()->playerEntityByBody_[body];
     playerEntity->decreaseFootContacts();
     return;
@@ -95,7 +96,7 @@ void ContactListener::handlePlayerEndContact(b2Contact *contact) {
   body = contact->GetFixtureB()->GetBody();
 
   if (*bodyUserData == BodyUserData::Player &&
-      *fixtureUserData == FixtureUserData::FootSensor) {
+      *fixtureUserData == FixtureUserData::FootSensor && contact->IsEnabled()) {
     auto playerEntity = GameLogic::GetInstance()->playerEntityByBody_[body];
     playerEntity->decreaseFootContacts();
     return;
@@ -149,7 +150,11 @@ void ContactListener::handleOneWayWallBeginContact(b2Contact *contact) {
 
 void ContactListener::handleOneWayWallEndContact(b2Contact *contact) {
   // reset the default state of the contact in case it comes back for more
-  contact->SetEnabled(true);
+  // contact->SetEnabled(true);
+  QTimer::singleShot(100, this, [contact]() {
+    contact->SetEnabled(true);
+    qDebug() << "contact enabled!";
+  });
 }
 
 void ContactListener::PreSolve(b2Contact *contact,
