@@ -40,7 +40,7 @@ GameScene::GameScene(QObject *parent)
   for (int i = 0; i < 10; ++i) {
     auto xOffset = QRandomGenerator::global()->generateDouble() * 8;
     auto staticBox = std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
-        b2Vec2(5.0f, 0.25f), b2Vec2(50 + xOffset * i, 3.5f * (1 + i))));
+        b2Vec2(5.0f, 0.25f), b2Vec2(50 + xOffset * i, 3.0f * (1 + i))));
     logic_->addEntity(std::move(staticBox));
   }
 

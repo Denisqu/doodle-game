@@ -51,7 +51,7 @@ void GameLogic::step() {
 
     it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
 
-    it.second->resetCurrentMove();
+    // it.second->resetCurrentMove();
   }
 
   // global physics step:
