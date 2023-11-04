@@ -17,6 +17,9 @@ public slots:
   // QWidget interface
 protected:
   virtual void keyPressEvent(QKeyEvent *event) override;
+
+private:
+  QPointF oldCenter;
 };
 
 } // namespace doodlelib
