@@ -1,22 +1,23 @@
 #ifndef VIEW_H
 #define VIEW_H
-#include <QObject>
-#include <QGraphicsView>
 #include "doodle-lib_global.h"
+#include <QGraphicsView>
+#include <QObject>
 
 namespace doodlelib {
 
-
-class DOODLELIB_EXPORT View : public QGraphicsView
-{
-    Q_OBJECT
+class DOODLELIB_EXPORT View : public QGraphicsView {
+  Q_OBJECT
 public:
-    explicit View();
+  explicit View();
 
-    // QWidget interface
+public slots:
+  void centerViewOnPlayer(QVector<QPointF> positions);
+
+  // QWidget interface
 protected:
-    virtual void keyPressEvent(QKeyEvent *event) override;
+  virtual void keyPressEvent(QKeyEvent *event) override;
 };
 
-}
+} // namespace doodlelib
 #endif // VIEW_H

@@ -11,15 +11,18 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QRandomGenerator>
+#include <algorithm>
 
 GameScene::GameScene(QObject *parent)
     : QGraphicsScene{parent}, mUpdateTimer{new QTimer(this)},
       logic_(GameLogic::GetInstance()) {
 
   connect(mUpdateTimer, &QTimer::timeout, this, &GameScene::update);
+  connect(this, &GameScene::propagatePressedKey, logic_,
+          &GameLogic::propagatePressedKey);
+
+  // register callback
   logic_->addOnAddEntityCallback([this](const Entity &entity) {
-    connect(this, &GameScene::propagatePressedKey, logic_,
-            &GameLogic::propagatePressedKey);
     auto rect = QRectF(0, 0, entity.boxDims().x * this->sceneScale,
                        entity.boxDims().y * this->sceneScale);
     rect.moveCenter(QPoint(0, 0));
@@ -71,19 +74,19 @@ void GameScene::update() {
   // render graphics on QGraphicsScene
   logic_->doOnActiveBody([this](b2Body *body) {
     auto entity = this->logic_->getEnityByBody(body);
-
     if (entity->renderInfo().isRenderingCollider) {
-
-      /*
-    qDebug() << "rendering this entity: " << entity.get()
-             << "with this rect: " << this->getRectItemByEntity(*entity)
-             << "its real pos:" << body->GetPosition().x << " "
-             << body->GetPosition().y;
-      */
-
       this->getRectItemByEntity(*entity)->setPos(
-          (body->GetPosition().x - 0 * entity->boxDims().x / 2) * sceneScale,
-          (body->GetPosition().y - 0 * entity->boxDims().y / 2) * sceneScale);
+          body->GetPosition().x * sceneScale,
+          body->GetPosition().y * sceneScale);
     }
   });
+
+  auto rawPlayerPositions = logic_->getPlayerPositions();
+  auto scenePlayerPositions = QVector<QPointF>();
+  std::for_each(rawPlayerPositions.begin(), rawPlayerPositions.end(),
+                [this, &scenePlayerPositions](b2Vec2 &el) {
+                  scenePlayerPositions.push_back(
+                      QPointF(el.x * sceneScale, el.y * sceneScale));
+                });
+  emit playerPositionUpdated(scenePlayerPositions);
 }

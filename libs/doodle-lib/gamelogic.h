@@ -26,6 +26,7 @@ public:
   void doOnActiveBody(std::function<void(b2Body *body)> func);
   std::shared_ptr<Entity> getEnityByBody(b2Body *body);
   void step();
+  std::vector<b2Vec2> getPlayerPositions();
 
   static constexpr double TimeStep = 1 / 60.f;
 

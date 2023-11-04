@@ -58,6 +58,15 @@ void GameLogic::step() {
   world_.Step(GameLogic::TimeStep, velocityIterations_, positionIterations_);
 }
 
+std::vector<b2Vec2> GameLogic::getPlayerPositions() {
+  auto positions = std::vector<b2Vec2>();
+
+  for (auto &pair : playerEntityByBody_) {
+    positions.push_back(pair.first->GetPosition());
+  }
+  return positions;
+}
+
 GameLogic::GameLogic() : QObject(nullptr) {
   world_.SetContactListener(new ContactListener());
 }

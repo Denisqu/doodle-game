@@ -19,6 +19,7 @@ public:
 
 signals:
   void propagatePressedKey(int key);
+  void playerPositionUpdated(QVector<QPointF> newPos);
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;
