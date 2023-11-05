@@ -1,8 +1,4 @@
 #include "gamescene.h"
-#include <QDebug>
-#include <QGraphicsPixmapItem>
-#include <QPixmap>
-
 #include "box2d/box2d.h"
 #include "entity.h"
 #include "entityconstructor.h"
@@ -10,13 +6,15 @@
 #include "playerentity.h"
 #include <QColor>
 #include <QDebug>
+#include <QGraphicsPixmapItem>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QPixmap>
 #include <QRandomGenerator>
 #include <algorithm>
 
-GameScene::GameScene(QObject *parent)
-    : QGraphicsScene{parent}, mUpdateTimer{new QTimer(this)},
+GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
+    : QGraphicsScene(sceneRect, parent), mUpdateTimer{new QTimer(this)},
       logic_(GameLogic::GetInstance()) {
 
   connect(mUpdateTimer, &QTimer::timeout, this, &GameScene::update);
@@ -25,8 +23,8 @@ GameScene::GameScene(QObject *parent)
 
   // register callback
   logic_->addOnAddEntityCallback([this](const Entity &entity) {
-    auto rect = QRectF(0, 0, entity.boxDims().x * this->sceneScale,
-                       entity.boxDims().y * this->sceneScale);
+    auto rect = QRectF(0, 0, entity.boxDims().x * GameScene::SceneScale,
+                       entity.boxDims().y * GameScene::SceneScale);
     rect.moveCenter(QPoint(0, 0));
     auto penColor = entity.physicsInfo().bodyUserData == BodyUserData::Player
                         ? QColor(0, 255, 0)
@@ -41,11 +39,27 @@ GameScene::GameScene(QObject *parent)
   auto groundBox = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
 
-  for (int i = 0; i < 10; ++i) {
-    auto xOffset = QRandomGenerator::global()->generateDouble() * 8;
-    auto platformBox =
-        std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
-            b2Vec2(5.0f, 0.25f), b2Vec2(50 + xOffset * i, 3.0f * (1 + i))));
+  auto previousPlatformPosition =
+      b2Vec2((double)sceneRect.center().x() / GameScene::SceneScale, 0.0f);
+  for (int i = 0; i < 100; ++i) {
+    auto xOffset = QRandomGenerator::global()->generateDouble() * 20 - 10;
+    auto newPos = b2Vec2(previousPlatformPosition.x + xOffset,
+                         previousPlatformPosition.y + 3);
+    auto newPosQPoint = QPointF(newPos.x * GameScene::SceneScale,
+                                newPos.y * GameScene::SceneScale);
+    bool isInSceneBound = newPosQPoint.x() > sceneRect.bottomLeft().x() &&
+                          newPosQPoint.x() < sceneRect.bottomRight().x();
+
+    qDebug() << newPosQPoint;
+    if (!isInSceneBound) {
+      --i;
+      continue;
+    }
+
+    auto platformBox = std::unique_ptr<Entity>(
+        EntityConstructor::CreateStaticBox(b2Vec2(3.0f, 0.25f), newPos));
+    previousPlatformPosition = newPos;
+
     logic_->addEntity(std::move(platformBox));
   }
 
@@ -79,8 +93,8 @@ void GameScene::update() {
     auto entity = this->logic_->getEnityByBody(body);
     if (entity->renderInfo().isRenderingCollider) {
       this->getRectItemByEntity(*entity)->setPos(
-          body->GetPosition().x * sceneScale,
-          body->GetPosition().y * sceneScale);
+          body->GetPosition().x * GameScene::SceneScale,
+          body->GetPosition().y * GameScene::SceneScale);
     }
   });
 
@@ -90,7 +104,8 @@ void GameScene::update() {
   std::for_each(rawPlayerPositions.begin(), rawPlayerPositions.end(),
                 [this, &scenePlayerPositions](b2Vec2 &el) {
                   scenePlayerPositions.push_back(
-                      QPointF(el.x * sceneScale, el.y * sceneScale));
+                      QPointF(el.x * GameScene::SceneScale,
+                              el.y * GameScene::SceneScale));
                 });
   emit playerPositionUpdated(scenePlayerPositions);
 

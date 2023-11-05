@@ -8,15 +8,15 @@
 namespace doodlelib {
 
 View::View() : QGraphicsView() {
-  auto scene = new GameScene(this);
-  setScene(scene);
-  resize(1280, 720);
-  scale(1, -1);
-
-  QRectF rect(QPointF(0, 0), QPointF(3000, 1000));
+  QRectF rect(QPointF(0, 0), QPointF(720, 720));
+  rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
   oldCenter = rect.center();
+
+  auto scene = new GameScene(rect, this);
+  setScene(scene);
+  resize(720, 720);
+  scale(1, -1);
   fitInView(rect);
-  setSceneRect(rect);
 
   setDragMode(QGraphicsView::NoDrag);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -27,11 +27,11 @@ View::View() : QGraphicsView() {
 }
 
 void View::centerViewOnPlayer(QVector<QPointF> positions) {
-  auto playerPos = positions[0];
+  auto playerPos = QPointF(oldCenter.x(), positions[0].y());
   auto newCenter = oldCenter + (playerPos - oldCenter) / 25;
   oldCenter = newCenter;
 
-  QRectF rect(QPointF(0, 0), QPointF(3000, 1000));
+  QRectF rect(QPointF(0, 0), QPointF(720, 720));
   rect.moveCenter(newCenter);
   fitInView(rect);
   setSceneRect(rect);
