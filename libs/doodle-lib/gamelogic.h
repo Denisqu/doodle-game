@@ -28,7 +28,7 @@ public:
   void step();
   std::vector<b2Vec2> getPlayerPositions();
 
-  static constexpr double TimeStep = 1 / 60.f;
+  static constexpr double TimeStep = 1 / 120.f;
 
 public slots:
   void propagatePressedKey(int key);

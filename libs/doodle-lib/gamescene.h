@@ -29,6 +29,7 @@ private:
   GameLogic *logic_;
   std::unordered_map<const Entity *, QGraphicsRectItem *> entityToRectItemMap;
   const double sceneScale = 50;
+  bool isUpdating = false;
   // QGraphicsRectItem* rectBox;
   // QGraphicsRectItem* rectGround;
 

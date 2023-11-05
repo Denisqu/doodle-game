@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QOpenGLWidget>
 
 namespace doodlelib {
 

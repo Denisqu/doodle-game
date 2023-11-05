@@ -8,8 +8,10 @@
 #include "entityconstructor.h"
 #include "gamelogic.h"
 #include "playerentity.h"
+#include <QColor>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QPainter>
 #include <QRandomGenerator>
 #include <algorithm>
 
@@ -26,35 +28,32 @@ GameScene::GameScene(QObject *parent)
     auto rect = QRectF(0, 0, entity.boxDims().x * this->sceneScale,
                        entity.boxDims().y * this->sceneScale);
     rect.moveCenter(QPoint(0, 0));
-    entityToRectItemMap[&entity] = this->addRect(rect);
+    auto penColor = entity.physicsInfo().bodyUserData == BodyUserData::Player
+                        ? QColor(0, 255, 0)
+                        : QColor(0, 0, 0);
+    auto brushColor = penColor;
+    brushColor.setAlpha(50);
+    auto pen = QPen(penColor);
+    auto brush = QBrush(brushColor, Qt::BrushStyle::SolidPattern);
+    entityToRectItemMap[&entity] = this->addRect(rect, pen, brush);
   });
 
-  /*
-  auto dynamicBox_0 = std::unique_ptr<Entity>(
-      EntityConstructor::CreateDynamicBox(b2Vec2(1, 2), b2Vec2(50, 25)));
-  auto dynamicBox_1 = std::unique_ptr<Entity>(
-      EntityConstructor::CreateDynamicBox(b2Vec2(1, 3), b2Vec2(50, 75)));
-  auto dynamicBox_2 = std::unique_ptr<Entity>(
-      EntityConstructor::CreateDynamicBox(b2Vec2(2, 1), b2Vec2(50, 50)));
- */
-  auto staticBox_0 = std::unique_ptr<Entity>(
+  auto groundBox = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
 
   for (int i = 0; i < 10; ++i) {
     auto xOffset = QRandomGenerator::global()->generateDouble() * 8;
-    auto staticBox = std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
-        b2Vec2(5.0f, 0.25f), b2Vec2(50 + xOffset * i, 3.0f * (1 + i))));
-    logic_->addEntity(std::move(staticBox));
+    auto platformBox =
+        std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
+            b2Vec2(5.0f, 0.25f), b2Vec2(50 + xOffset * i, 3.0f * (1 + i))));
+    logic_->addEntity(std::move(platformBox));
   }
 
   auto playerEntity = std::unique_ptr<Entity>(
       static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
           b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
 
-  // logic_->addEntity(std::move(dynamicBox_0));
-  // logic_->addEntity(std::move(dynamicBox_1));
-  // logic_->addEntity(std::move(dynamicBox_2));
-  logic_->addEntity(std::move(staticBox_0));
+  logic_->addEntity(std::move(groundBox));
   logic_->addEntity(std::move(playerEntity));
   mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
@@ -68,6 +67,10 @@ void GameScene::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameScene::update() {
+  if (isUpdating)
+    return;
+  isUpdating = true;
+
   // update logic
   logic_->step();
 
@@ -81,6 +84,7 @@ void GameScene::update() {
     }
   });
 
+  // send player scene positions with signal
   auto rawPlayerPositions = logic_->getPlayerPositions();
   auto scenePlayerPositions = QVector<QPointF>();
   std::for_each(rawPlayerPositions.begin(), rawPlayerPositions.end(),
@@ -89,4 +93,6 @@ void GameScene::update() {
                       QPointF(el.x * sceneScale, el.y * sceneScale));
                 });
   emit playerPositionUpdated(scenePlayerPositions);
+
+  isUpdating = false;
 }
