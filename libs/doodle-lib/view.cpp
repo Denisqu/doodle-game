@@ -29,6 +29,10 @@ View::View() : QGraphicsView() {
 void View::centerViewOnPlayer(QVector<QPointF> positions) {
   auto playerPos = QPointF(oldCenter.x(), positions[0].y());
   auto newCenter = oldCenter + (playerPos - oldCenter) / 25;
+
+  if (newCenter.y() <= oldCenter.y())
+    return;
+
   oldCenter = newCenter;
 
   QRectF rect(QPointF(0, 0), QPointF(720, 720));
