@@ -15,9 +15,20 @@ GameLogic *GameLogic::GetInstance() {
 }
 
 void GameLogic::step() {
-  // move player:
+  // player
   for (auto &it : playerEntityByBody_) {
 
+    // teleport on scene bounds
+    auto playerCurrentPos = it.first->GetPosition();
+    if (playerCurrentPos.x < sceneBounds[0]) {
+      it.first->SetTransform(b2Vec2(sceneBounds[1] - 0.05, playerCurrentPos.y),
+                             it.first->GetAngle());
+    } else if (it.first->GetPosition().x > sceneBounds[1]) {
+      it.first->SetTransform(b2Vec2(sceneBounds[0] + 0.05, playerCurrentPos.y),
+                             it.first->GetAngle());
+    }
+
+    // move player
     b2Vec2 currentVel = it.first->GetLinearVelocity();
     b2Vec2 desiredVel{};
 
@@ -65,6 +76,11 @@ std::vector<b2Vec2> GameLogic::getPlayerPositions() {
     positions.push_back(pair.first->GetPosition());
   }
   return positions;
+}
+
+void GameLogic::setSceneHorizontalBounds(double leftBound, double rightBound) {
+  sceneBounds[0] = leftBound;
+  sceneBounds[1] = rightBound;
 }
 
 GameLogic::GameLogic() : QObject(nullptr) {

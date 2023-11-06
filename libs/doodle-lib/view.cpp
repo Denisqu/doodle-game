@@ -39,8 +39,6 @@ void View::centerViewOnPlayer(QVector<QPointF> positions) {
   rect.moveCenter(newCenter);
   fitInView(rect);
   setSceneRect(rect);
-
-  qDebug() << "Centering View on Player!" << positions[0];
 }
 
 /**

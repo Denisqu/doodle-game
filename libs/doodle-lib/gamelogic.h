@@ -27,6 +27,7 @@ public:
   std::shared_ptr<Entity> getEnityByBody(b2Body *body);
   void step();
   std::vector<b2Vec2> getPlayerPositions();
+  void setSceneHorizontalBounds(double leftBound, double rightBound);
 
   static constexpr double TimeStep = 1 / 120.f;
 
@@ -48,6 +49,7 @@ private:
   const int positionIterations_ = 3;
   const b2Vec2 gravity_ = b2Vec2(0.0, -10.0f);
   b2World world_ = b2World(gravity_);
+  double sceneBounds[2] = {0, 0};
 
   friend class ContactListener;
 };

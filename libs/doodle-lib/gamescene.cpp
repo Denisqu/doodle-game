@@ -36,6 +36,10 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
     entityToRectItemMap[&entity] = this->addRect(rect, pen, brush);
   });
 
+  logic_->setSceneHorizontalBounds(
+      sceneRect.bottomLeft().x() / GameScene::SceneScale,
+      sceneRect.bottomRight().x() / GameScene::SceneScale);
+
   auto groundBox = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
 
