@@ -9,6 +9,7 @@
 
 #include "box2d/box2d.h"
 
+enum class BodyUserData;
 class Entity;
 class EntityRenderer;
 class PlayerEntity;
@@ -28,8 +29,11 @@ public:
   void step();
   std::vector<b2Vec2> getPlayerPositions();
   void setSceneHorizontalBounds(double leftBound, double rightBound);
+  void generateObjectPool();
+  void generateLevel(b2Vec2 lastPlatformPosition, b2Vec2 playerPosition);
 
-  static constexpr double TimeStep = 1 / 120.f;
+  static constexpr double TimeStep = 1.0f / 120;
+  static constexpr double TimeStepMultiplier = 1.0f;
 
 public slots:
   void propagatePressedKey(int key);
@@ -50,6 +54,7 @@ private:
   const b2Vec2 gravity_ = b2Vec2(0.0, -10.0f);
   b2World world_ = b2World(gravity_);
   double sceneBounds[2] = {0, 0};
+  std::unordered_map<BodyUserData, std::vector<b2Body *>> objectPool;
 
   friend class ContactListener;
 };

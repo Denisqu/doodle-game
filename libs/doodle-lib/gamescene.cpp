@@ -106,7 +106,7 @@ void GameScene::update() {
   auto rawPlayerPositions = logic_->getPlayerPositions();
   auto scenePlayerPositions = QVector<QPointF>();
   std::for_each(rawPlayerPositions.begin(), rawPlayerPositions.end(),
-                [this, &scenePlayerPositions](b2Vec2 &el) {
+                [&scenePlayerPositions](b2Vec2 &el) {
                   scenePlayerPositions.push_back(
                       QPointF(el.x * GameScene::SceneScale,
                               el.y * GameScene::SceneScale));

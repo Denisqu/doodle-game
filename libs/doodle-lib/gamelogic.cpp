@@ -2,6 +2,7 @@
 #include "box2d/box2d.h"
 #include "contactlistener.h"
 #include "entity.h"
+#include "entityconstructor.h"
 #include "playerentity.h"
 #include <QDateTime>
 #include <QDebug>
@@ -66,7 +67,8 @@ void GameLogic::step() {
   }
 
   // global physics step:
-  world_.Step(GameLogic::TimeStep, velocityIterations_, positionIterations_);
+  world_.Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
+              velocityIterations_, positionIterations_);
 }
 
 std::vector<b2Vec2> GameLogic::getPlayerPositions() {
@@ -83,8 +85,23 @@ void GameLogic::setSceneHorizontalBounds(double leftBound, double rightBound) {
   sceneBounds[1] = rightBound;
 }
 
+void GameLogic::generateObjectPool() {
+  for (int i = 0; i < 15; ++i) {
+    auto platformBox =
+        std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
+            b2Vec2(3.0f, 0.25f), b2Vec2(-999, -999)));
+  }
+}
+
+void GameLogic::generateLevel(b2Vec2 lastPlatformPosition,
+                              b2Vec2 playerPosition) {
+  // 1) get next platform from object pool
+  // 2)
+}
+
 GameLogic::GameLogic() : QObject(nullptr) {
   world_.SetContactListener(new ContactListener());
+  generateObjectPool();
 }
 
 void GameLogic::propagatePressedKey(int key) {
