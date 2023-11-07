@@ -6,6 +6,7 @@
 #include "playerentity.h"
 #include <QDateTime>
 #include <QDebug>
+#include <QRandomGenerator>
 
 GameLogic *GameLogic::instance_ = nullptr;
 
@@ -18,7 +19,6 @@ GameLogic *GameLogic::GetInstance() {
 void GameLogic::step() {
   // player
   for (auto &it : playerEntityByBody_) {
-
     // teleport on scene bounds
     auto playerCurrentPos = it.first->GetPosition();
     if (playerCurrentPos.x < sceneBounds[0]) {
@@ -62,8 +62,18 @@ void GameLogic::step() {
     // qDebug() << "currentVel = " << currentVel.x << " " << currentVel.y;
 
     it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
+  }
 
-    // it.second->resetCurrentMove();
+  // move platforms
+  static b2Vec2 previousPlatformUpdatePos{
+      playerEntityByBody_.begin()->first->GetPosition()};
+
+  if (playerEntityByBody_.begin()->first->GetPosition().y -
+          previousPlatformUpdatePos.y >
+      2) {
+    updatePlatformPositions();
+    previousPlatformUpdatePos =
+        playerEntityByBody_.begin()->first->GetPosition();
   }
 
   // global physics step:
@@ -86,22 +96,48 @@ void GameLogic::setSceneHorizontalBounds(double leftBound, double rightBound) {
 }
 
 void GameLogic::generateObjectPool() {
-  for (int i = 0; i < 15; ++i) {
+  objectPool[BodyUserData::Platform] = {};
+  for (int i = 0; i < 10; ++i) {
     auto platformBox =
         std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
-            b2Vec2(3.0f, 0.25f), b2Vec2(-999, -999)));
+            b2Vec2(3.0f, 0.25f), b2Vec2(100, 100)));
+    auto platformBody = this->addEntity(std::move(platformBox));
+    objectPool[BodyUserData::Platform].push_back(platformBody);
   }
 }
 
-void GameLogic::generateLevel(b2Vec2 lastPlatformPosition,
-                              b2Vec2 playerPosition) {
+void GameLogic::updatePlatformPositions() {
+  static unsigned int nextPlatformIndex{};
+  static b2Vec2 lastPlatformPosition =
+      playerEntityByBody_.begin()->first->GetPosition();
+
+  qDebug() << "before: " << nextPlatformIndex;
+
   // 1) get next platform from object pool
-  // 2)
+  nextPlatformIndex =
+      nextPlatformIndex % objectPool[BodyUserData::Platform].size();
+  auto nextPlatform = objectPool[BodyUserData::Platform][nextPlatformIndex];
+  nextPlatformIndex++;
+
+  qDebug() << "after: " << nextPlatformIndex;
+
+  // 2) calculate next platform position and verify position
+  bool isInSceneBounds = false;
+  auto nextPos = b2Vec2(-999, -999);
+  while (!isInSceneBounds) {
+    auto xOffset = QRandomGenerator::global()->generateDouble() * 20 - 10;
+    nextPos =
+        b2Vec2(lastPlatformPosition.x + xOffset, lastPlatformPosition.y + 3);
+    isInSceneBounds = nextPos.x > sceneBounds[0] && nextPos.x < sceneBounds[1];
+  }
+  lastPlatformPosition = nextPos;
+
+  // 3) update next platform position
+  nextPlatform->SetTransform(nextPos, nextPlatform->GetAngle());
 }
 
 GameLogic::GameLogic() : QObject(nullptr) {
   world_.SetContactListener(new ContactListener());
-  generateObjectPool();
 }
 
 void GameLogic::propagatePressedKey(int key) {
@@ -130,7 +166,7 @@ void GameLogic::setEntityRenderer(
   entityRenderer_ = newEntityRenderer;
 }
 
-void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
+b2Body *GameLogic::addEntity(std::unique_ptr<Entity> entity) {
   for (const auto &callback : onAddEntityCallbacks_) {
     callback(*entity);
   }
@@ -147,6 +183,8 @@ void GameLogic::addEntity(std::unique_ptr<Entity> entity) {
   }
 
   basicEntityByBody_[body] = std::move(entity);
+
+  return body;
 }
 
 void GameLogic::addOnAddEntityCallback(

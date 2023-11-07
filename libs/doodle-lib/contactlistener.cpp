@@ -124,7 +124,7 @@ void ContactListener::handleOneWayWallBeginContact(b2Contact *contact) {
   if (!platformFixture)
     return;
 
-  qDebug() << "platformFixture is not null";
+  // qDebug() << "platformFixture is not null";
 
   // b2Body *platformBody = platformFixture->GetBody();
   b2Body *otherBody = otherFixture->GetBody();
@@ -136,14 +136,14 @@ void ContactListener::handleOneWayWallBeginContact(b2Contact *contact) {
   for (int i = 0; i < numPoints; i++) {
     b2Vec2 pointVel =
         otherBody->GetLinearVelocityFromWorldPoint(worldManifold.points[i]);
-    qDebug() << pointVel.x << " " << pointVel.y;
+    // qDebug() << pointVel.x << " " << pointVel.y;
     if (pointVel.y < 0) {
-      qDebug() << "point is moving down, exit";
+      // qDebug() << "point is moving down, exit";
       return; // point is moving down, leave contact solid and exit
     }
   }
 
-  qDebug() << "disable platform collider";
+  // qDebug() << "disable platform collider";
   // no points are moving downward, contact should not be solid
   contact->SetEnabled(false);
 }
@@ -153,7 +153,7 @@ void ContactListener::handleOneWayWallEndContact(b2Contact *contact) {
   // contact->SetEnabled(true);
   QTimer::singleShot(100, this, [contact]() {
     contact->SetEnabled(true);
-    qDebug() << "contact enabled!";
+    // qDebug() << "contact enabled!";
   });
 }
 

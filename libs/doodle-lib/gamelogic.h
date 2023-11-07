@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "box2d/box2d.h"
+#include "entity.h"
 
-enum class BodyUserData;
 class Entity;
 class EntityRenderer;
 class PlayerEntity;
@@ -21,7 +21,7 @@ public:
   static GameLogic *GetInstance();
   void
   setEntityRenderer(const std::shared_ptr<EntityRenderer> &newEntityRenderer);
-  void addEntity(std::unique_ptr<Entity> entity);
+  b2Body *addEntity(std::unique_ptr<Entity> entity);
   void
   addOnAddEntityCallback(std::function<void(const Entity &entity)> callback);
   void doOnActiveBody(std::function<void(b2Body *body)> func);
@@ -30,7 +30,7 @@ public:
   std::vector<b2Vec2> getPlayerPositions();
   void setSceneHorizontalBounds(double leftBound, double rightBound);
   void generateObjectPool();
-  void generateLevel(b2Vec2 lastPlatformPosition, b2Vec2 playerPosition);
+  void updatePlatformPositions();
 
   static constexpr double TimeStep = 1.0f / 120;
   static constexpr double TimeStepMultiplier = 1.0f;

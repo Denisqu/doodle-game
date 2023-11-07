@@ -42,37 +42,17 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
 
   auto groundBox = std::unique_ptr<Entity>(
       EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
-
-  auto previousPlatformPosition =
-      b2Vec2((double)sceneRect.center().x() / GameScene::SceneScale, 0.0f);
-  for (int i = 0; i < 100; ++i) {
-    auto xOffset = QRandomGenerator::global()->generateDouble() * 20 - 10;
-    auto newPos = b2Vec2(previousPlatformPosition.x + xOffset,
-                         previousPlatformPosition.y + 3);
-    auto newPosQPoint = QPointF(newPos.x * GameScene::SceneScale,
-                                newPos.y * GameScene::SceneScale);
-    bool isInSceneBound = newPosQPoint.x() > sceneRect.bottomLeft().x() &&
-                          newPosQPoint.x() < sceneRect.bottomRight().x();
-
-    qDebug() << newPosQPoint;
-    if (!isInSceneBound) {
-      --i;
-      continue;
-    }
-
-    auto platformBox = std::unique_ptr<Entity>(
-        EntityConstructor::CreateStaticBox(b2Vec2(3.0f, 0.25f), newPos));
-    previousPlatformPosition = newPos;
-
-    logic_->addEntity(std::move(platformBox));
-  }
-
   auto playerEntity = std::unique_ptr<Entity>(
       static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
           b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
 
+  logic_->generateObjectPool();
   logic_->addEntity(std::move(groundBox));
   logic_->addEntity(std::move(playerEntity));
+  logic_->updatePlatformPositions();
+  logic_->updatePlatformPositions();
+  logic_->updatePlatformPositions();
+
   mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
 
