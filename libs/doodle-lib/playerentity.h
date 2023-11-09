@@ -25,12 +25,18 @@ public:
   void setJumpTimeoutMs(qint64 newJumpTimeoutMs);
   bool canJump();
 
-private:
+  double getReward() const;
+  void updateReward(double delta);
+
+  void setReward(double newReward);
+
+  private:
   ControllerType controllerType_;
   MoveType currentMove_ = MoveType::NoOp;
   unsigned int footContactsCount_ = 0;
   qint64 lastJumpingTimeMs = QDateTime::currentMSecsSinceEpoch();
   qint64 jumpTimeoutMs = 100;
+  double reward;
 };
 
 #endif // PLAYERENTITY_H

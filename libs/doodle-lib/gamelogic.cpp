@@ -29,6 +29,10 @@ void GameLogic::step() {
                              it.first->GetAngle());
     }
 
+    // update reward
+    it.second->setReward(it.first->GetPosition().y);
+    qDebug() << it.second->getReward();
+
     // move player
     b2Vec2 currentVel = it.first->GetLinearVelocity();
     b2Vec2 desiredVel{};
@@ -58,9 +62,6 @@ void GameLogic::step() {
     auto velChange = desiredVel - currentVel;
     auto impulse = it.first->GetMass() * velChange;
 
-    // qDebug() << "deserideVel = " << desiredVel.x << " " << desiredVel.y;
-    // qDebug() << "currentVel = " << currentVel.x << " " << currentVel.y;
-
     it.first->ApplyLinearImpulse(impulse, it.first->GetWorldCenter(), true);
   }
 
@@ -75,6 +76,8 @@ void GameLogic::step() {
     previousPlatformUpdatePos =
         playerEntityByBody_.begin()->first->GetPosition();
   }
+
+  // calculate reward for players
 
   // global physics step:
   world_.Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,

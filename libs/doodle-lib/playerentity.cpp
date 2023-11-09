@@ -37,6 +37,15 @@ bool PlayerEntity::canJump() {
   return isContactingGround && isTimeoutDone;
 }
 
+double PlayerEntity::getReward() const { return reward; }
+
+void PlayerEntity::updateReward(double delta) { reward += delta; }
+
+void PlayerEntity::setReward(double newReward)
+{
+    reward = newReward;
+}
+
 /*
  * Reference:
  *
