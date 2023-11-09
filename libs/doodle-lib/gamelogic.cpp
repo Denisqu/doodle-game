@@ -70,7 +70,7 @@ void GameLogic::step() {
 
   if (playerEntityByBody_.begin()->first->GetPosition().y -
           previousPlatformUpdatePos.y >
-      2) {
+      3) {
     updatePlatformPositions();
     previousPlatformUpdatePos =
         playerEntityByBody_.begin()->first->GetPosition();
@@ -111,15 +111,11 @@ void GameLogic::updatePlatformPositions() {
   static b2Vec2 lastPlatformPosition =
       playerEntityByBody_.begin()->first->GetPosition();
 
-  qDebug() << "before: " << nextPlatformIndex;
-
   // 1) get next platform from object pool
   nextPlatformIndex =
       nextPlatformIndex % objectPool[BodyUserData::Platform].size();
   auto nextPlatform = objectPool[BodyUserData::Platform][nextPlatformIndex];
   nextPlatformIndex++;
-
-  qDebug() << "after: " << nextPlatformIndex;
 
   // 2) calculate next platform position and verify position
   bool isInSceneBounds = false;
