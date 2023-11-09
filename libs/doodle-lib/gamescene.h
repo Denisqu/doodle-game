@@ -19,9 +19,13 @@ public:
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
   constexpr static const double SceneScale = 50;
 
+public slots:
+  void resetGraphicsScene();
+
 signals:
   void propagatePressedKey(int key);
   void playerPositionUpdated(QVector<QPointF> newPos);
+  void graphicsSceneReseted();
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;

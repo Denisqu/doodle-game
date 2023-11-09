@@ -10,6 +10,12 @@
 
 GameLogic *GameLogic::instance_ = nullptr;
 
+GameLogic::GameLogic()
+    : QObject(nullptr), contactListener_(new ContactListener()) {
+  qRegisterMetaType<PlayerEntity *>();
+  connect(this, &GameLogic::playerLose, this, &GameLogic::restartGame);
+}
+
 GameLogic *GameLogic::GetInstance() {
   if (instance_ == nullptr)
     instance_ = new GameLogic();
@@ -21,18 +27,19 @@ void GameLogic::step() {
   for (auto &it : playerEntityByBody_) {
     // teleport on scene bounds
     auto playerCurrentPos = it.first->GetPosition();
-    if (playerCurrentPos.x < sceneBounds[0]) {
-      it.first->SetTransform(b2Vec2(sceneBounds[1] - 0.05, playerCurrentPos.y),
+    if (playerCurrentPos.x < sceneBounds_[0]) {
+      it.first->SetTransform(b2Vec2(sceneBounds_[1] - 0.05, playerCurrentPos.y),
                              it.first->GetAngle());
-    } else if (it.first->GetPosition().x > sceneBounds[1]) {
-      it.first->SetTransform(b2Vec2(sceneBounds[0] + 0.05, playerCurrentPos.y),
+    } else if (it.first->GetPosition().x > sceneBounds_[1]) {
+      it.first->SetTransform(b2Vec2(sceneBounds_[0] + 0.05, playerCurrentPos.y),
                              it.first->GetAngle());
     }
 
     // lose player
-    if (it.first->GetLinearVelocity().y < -15) {
+    if (it.first->GetLinearVelocity().y < -14) {
       qDebug() << "You lose!";
-      emit playerLose(it.second);
+      emit playerLose(it.second.get());
+      return;
     }
 
     // update reward
@@ -75,20 +82,17 @@ void GameLogic::step() {
   }
 
   // move platforms
-  static b2Vec2 previousPlatformUpdatePos{
-      playerEntityByBody_.begin()->first->GetPosition()};
-
   if (playerEntityByBody_.begin()->first->GetPosition().y -
-          previousPlatformUpdatePos.y >
+          previousPlatformUpdatePos_.y >
       3) {
     updatePlatformPositions();
-    previousPlatformUpdatePos =
+    previousPlatformUpdatePos_ =
         playerEntityByBody_.begin()->first->GetPosition();
   }
 
   // global physics step:
-  world_.Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
-              velocityIterations_, positionIterations_);
+  world_->Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
+               velocityIterations_, positionIterations_);
 }
 
 std::vector<b2Vec2> GameLogic::getPlayerPositions() {
@@ -101,30 +105,35 @@ std::vector<b2Vec2> GameLogic::getPlayerPositions() {
 }
 
 void GameLogic::setSceneHorizontalBounds(double leftBound, double rightBound) {
-  sceneBounds[0] = leftBound;
-  sceneBounds[1] = rightBound;
+  sceneBounds_[0] = leftBound;
+  sceneBounds_[1] = rightBound;
 }
 
 void GameLogic::generateObjectPool() {
-  objectPool[BodyUserData::Platform] = {};
+  objectPool_[BodyUserData::Platform] = {};
   for (int i = 0; i < 10; ++i) {
     auto platformBox =
         std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
             b2Vec2(3.0f, 0.25f), b2Vec2(100, 100)));
     auto platformBody = this->addEntity(std::move(platformBox));
-    objectPool[BodyUserData::Platform].push_back(platformBody);
+    objectPool_[BodyUserData::Platform].push_back(platformBody);
   }
 }
 
-void GameLogic::updatePlatformPositions() {
+void GameLogic::updatePlatformPositions(PlatformGenerationState state) {
   static unsigned int nextPlatformIndex{};
   static b2Vec2 lastPlatformPosition =
       playerEntityByBody_.begin()->first->GetPosition();
 
+  if (state == PlatformGenerationState::Reset) {
+    nextPlatformIndex = 0;
+    lastPlatformPosition = playerEntityByBody_.begin()->first->GetPosition();
+  }
+
   // 1) get next platform from object pool
   nextPlatformIndex =
-      nextPlatformIndex % objectPool[BodyUserData::Platform].size();
-  auto nextPlatform = objectPool[BodyUserData::Platform][nextPlatformIndex];
+      nextPlatformIndex % objectPool_[BodyUserData::Platform].size();
+  auto nextPlatform = objectPool_[BodyUserData::Platform][nextPlatformIndex];
   nextPlatformIndex++;
 
   // 2) calculate next platform position and verify position
@@ -134,7 +143,8 @@ void GameLogic::updatePlatformPositions() {
     auto xOffset = QRandomGenerator::global()->generateDouble() * 20 - 10;
     nextPos =
         b2Vec2(lastPlatformPosition.x + xOffset, lastPlatformPosition.y + 3);
-    isInSceneBounds = nextPos.x > sceneBounds[0] && nextPos.x < sceneBounds[1];
+    isInSceneBounds =
+        nextPos.x > sceneBounds_[0] && nextPos.x < sceneBounds_[1];
   }
   lastPlatformPosition = nextPos;
 
@@ -142,9 +152,46 @@ void GameLogic::updatePlatformPositions() {
   nextPlatform->SetTransform(nextPos, nextPlatform->GetAngle());
 }
 
-GameLogic::GameLogic() : QObject(nullptr) {
-  qRegisterMetaType<std::shared_ptr<PlayerEntity>>();
-  world_.SetContactListener(new ContactListener());
+void GameLogic::startGame() {
+  if (state_ == GameState::Started)
+    return;
+
+  world_ = std::make_unique<b2World>(gravity_);
+  world_->SetContactListener(contactListener_.get());
+  generateObjectPool();
+  auto groundBox = std::unique_ptr<Entity>(
+      EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
+  addEntity(std::move(groundBox));
+  auto playerEntity = std::unique_ptr<Entity>(
+      static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
+          b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
+  addEntity(std::move(playerEntity));
+
+  updatePlatformPositions(PlatformGenerationState::Reset);
+  for (int i = 0; i < 2; ++i) {
+    updatePlatformPositions();
+  }
+
+  state_ = GameState::Started;
+}
+
+void GameLogic::restartGame() {
+  if (state_ == GameState::Invalid)
+    return;
+
+  emit gameRestartStarted();
+  // reset data structures
+  state_ = GameState::Invalid;
+  basicEntityByBody_ = std::unordered_map<b2Body *, std::shared_ptr<Entity>>();
+  playerEntityByBody_ =
+      std::unordered_map<b2Body *, std::shared_ptr<PlayerEntity>>();
+  objectPool_ = std::unordered_map<BodyUserData, std::vector<b2Body *>>();
+  previousPlatformUpdatePos_ = {0, 0};
+  world_.reset();
+
+  startGame();
+
+  emit gameRestartEnded();
 }
 
 void GameLogic::propagatePressedKey(int key) {
@@ -163,14 +210,7 @@ void GameLogic::propagatePressedKey(int key) {
 }
 
 std::shared_ptr<Entity> GameLogic::getEnityByBody(b2Body *body) {
-  // return std::make_shared<Entity>(entityByBody_[body]);
   return std::shared_ptr<Entity>(basicEntityByBody_[body]);
-}
-
-// TODO: возможно нужно будет удалить
-void GameLogic::setEntityRenderer(
-    const std::shared_ptr<EntityRenderer> &newEntityRenderer) {
-  entityRenderer_ = newEntityRenderer;
 }
 
 b2Body *GameLogic::addEntity(std::unique_ptr<Entity> entity) {
@@ -178,18 +218,20 @@ b2Body *GameLogic::addEntity(std::unique_ptr<Entity> entity) {
     callback(*entity);
   }
 
-  b2Body *body = world_.CreateBody(&entity->physicsInfo().bodyDefPair.first);
+  b2Body *body = world_->CreateBody(&entity->physicsInfo().bodyDefPair.first);
   for (const auto &tuple : entity->physicsInfo().fixtureShapeDefs) {
     body->CreateFixture(&std::get<0>(tuple));
   }
 
-  if (dynamic_cast<PlayerEntity *>(entity.get())) {
-    auto castedPointer = dynamic_cast<PlayerEntity *>(entity.get());
+  basicEntityByBody_[body] = std::move(entity);
+
+  if (std::dynamic_pointer_cast<PlayerEntity>(basicEntityByBody_[body])) {
+    // auto castedPointer = dynamic_cast<PlayerEntity *>(entity.get());
+    auto castedPointer =
+        std::dynamic_pointer_cast<PlayerEntity>(basicEntityByBody_[body]);
     auto playerEntity = std::shared_ptr<PlayerEntity>(castedPointer);
     playerEntityByBody_[body] = std::move(playerEntity);
   }
-
-  basicEntityByBody_[body] = std::move(entity);
 
   return body;
 }
@@ -200,7 +242,7 @@ void GameLogic::addOnAddEntityCallback(
 }
 
 void GameLogic::doOnActiveBody(std::function<void(b2Body *)> func) {
-  for (b2Body *bIter = world_.GetBodyList(); bIter != 0;
+  for (b2Body *bIter = world_->GetBodyList(); bIter != 0;
        bIter = bIter->GetNext()) {
     func(bIter);
   }

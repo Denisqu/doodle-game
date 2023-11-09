@@ -20,6 +20,8 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
   connect(mUpdateTimer, &QTimer::timeout, this, &GameScene::update);
   connect(this, &GameScene::propagatePressedKey, logic_,
           &GameLogic::propagatePressedKey);
+  connect(logic_, &GameLogic::gameRestartStarted, this,
+          &GameScene::resetGraphicsScene);
 
   // register callback
   logic_->addOnAddEntityCallback([this](const Entity &entity) {
@@ -40,24 +42,20 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
       sceneRect.bottomLeft().x() / GameScene::SceneScale,
       sceneRect.bottomRight().x() / GameScene::SceneScale);
 
-  auto groundBox = std::unique_ptr<Entity>(
-      EntityConstructor::CreateStaticBox(b2Vec2(100.0f, 2.0f), b2Vec2(50, 0)));
-  auto playerEntity = std::unique_ptr<Entity>(
-      static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
-          b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
-
-  logic_->generateObjectPool();
-  logic_->addEntity(std::move(groundBox));
-  logic_->addEntity(std::move(playerEntity));
-  logic_->updatePlatformPositions();
-  logic_->updatePlatformPositions();
-  logic_->updatePlatformPositions();
+  logic_->startGame();
 
   mUpdateTimer->start(GameLogic::TimeStep * 1000);
 }
 
 QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
   return entityToRectItemMap[&entity];
+}
+
+void GameScene::resetGraphicsScene() {
+  entityToRectItemMap =
+      std::unordered_map<const Entity *, QGraphicsRectItem *>();
+  this->clear();
+  emit graphicsSceneReseted();
 }
 
 void GameScene::keyPressEvent(QKeyEvent *event) {

@@ -13,14 +13,18 @@
 class Entity;
 class EntityRenderer;
 class PlayerEntity;
+class ContactListener;
+
+enum class GameState : unsigned int { Invalid = 0, Started, Pause };
+
+enum class PlatformGenerationState : unsigned int { Default = 0, Reset };
 
 class GameLogic : public QObject {
   Q_OBJECT
 
 public:
   static GameLogic *GetInstance();
-  void
-  setEntityRenderer(const std::shared_ptr<EntityRenderer> &newEntityRenderer);
+
   b2Body *addEntity(std::unique_ptr<Entity> entity);
   void
   addOnAddEntityCallback(std::function<void(const Entity &entity)> callback);
@@ -30,7 +34,10 @@ public:
   std::vector<b2Vec2> getPlayerPositions();
   void setSceneHorizontalBounds(double leftBound, double rightBound);
   void generateObjectPool();
-  void updatePlatformPositions();
+  void updatePlatformPositions(
+      PlatformGenerationState state = PlatformGenerationState::Default);
+  void startGame();
+  void restartGame();
 
   static constexpr double TimeStep = 1.0f / 120;
   static constexpr double TimeStepMultiplier = 1.0f;
@@ -39,7 +46,9 @@ public slots:
   void propagatePressedKey(int key);
 
 signals:
-  void playerLose(std::shared_ptr<PlayerEntity> player);
+  void playerLose(const PlayerEntity *const player);
+  void gameRestartStarted();
+  void gameRestartEnded();
 
 private:
   explicit GameLogic();
@@ -47,21 +56,23 @@ private:
   void operator=(const GameLogic &other) = delete;
 
   static GameLogic *instance_;
-  std::shared_ptr<EntityRenderer> entityRenderer_;
+
+  std::unique_ptr<ContactListener> contactListener_;
   std::unordered_map<b2Body *, std::shared_ptr<Entity>> basicEntityByBody_;
   std::unordered_map<b2Body *, std::shared_ptr<PlayerEntity>>
       playerEntityByBody_;
-  std::vector<std::function<void(const Entity &entity)>> onAddEntityCallbacks_;
+  std::vector<std::function<void(const Entity &)>> onAddEntityCallbacks_;
   const int velocityIterations_ = 8;
   const int positionIterations_ = 3;
   const b2Vec2 gravity_ = b2Vec2(0.0, -10.0f);
-  b2World world_ = b2World(gravity_);
-  double sceneBounds[2] = {0, 0};
-  std::unordered_map<BodyUserData, std::vector<b2Body *>> objectPool;
+  std::unique_ptr<b2World> world_;
+  double sceneBounds_[2] = {0, 0};
+  std::unordered_map<BodyUserData, std::vector<b2Body *>> objectPool_;
+  GameState state_ = GameState::Invalid;
+
+  b2Vec2 previousPlatformUpdatePos_{};
 
   friend class ContactListener;
 };
-
-Q_DECLARE_METATYPE(std::shared_ptr<PlayerEntity>)
 
 #endif // GAMELOGIC_H

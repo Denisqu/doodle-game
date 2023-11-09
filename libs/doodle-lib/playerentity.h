@@ -30,7 +30,7 @@ public:
 
   void setReward(double newReward);
 
-  private:
+private:
   ControllerType controllerType_;
   MoveType currentMove_ = MoveType::NoOp;
   unsigned int footContactsCount_ = 0;
@@ -38,5 +38,7 @@ public:
   qint64 jumpTimeoutMs = 100;
   double reward;
 };
+
+Q_DECLARE_METATYPE(PlayerEntity *)
 
 #endif // PLAYERENTITY_H

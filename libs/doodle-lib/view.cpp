@@ -24,6 +24,11 @@ View::View() : QGraphicsView() {
 
   connect(scene, &GameScene::playerPositionUpdated, this,
           &View::centerViewOnPlayer);
+  connect(scene, &GameScene::graphicsSceneReseted, this, [this] {
+    QRectF rect(QPointF(0, 0), QPointF(720, 720));
+    rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
+    oldCenter = rect.center();
+  });
 }
 
 void View::centerViewOnPlayer(QVector<QPointF> positions) {
