@@ -52,7 +52,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(doodle-game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets doodle-lib)
+target_link_libraries(doodle-game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets doodle-lib ml-lib)
 
 set_target_properties(doodle-game PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

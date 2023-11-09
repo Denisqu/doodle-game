@@ -18,6 +18,8 @@ add_library(ml-lib SHARED
   ml-lib_global.h
   mllib.cpp
   mllib.h
+  agent.h agent.cpp
+  dqn.h dqn.cpp
 )
 
 # The following code block is suggested to be used on Windows.
@@ -32,5 +34,5 @@ if (MSVC)
                      $<TARGET_FILE_DIR:ml-lib>)
 endif (MSVC)
 
-target_link_libraries(ml-lib "${TORCH_LIBRARIES}")
+target_link_libraries(ml-lib PRIVATE "${TORCH_LIBRARIES}")
 target_compile_definitions(ml-lib PRIVATE MLLIB_LIBRARY)
