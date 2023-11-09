@@ -29,9 +29,18 @@ void GameLogic::step() {
                              it.first->GetAngle());
     }
 
+    // lose player
+    if (it.first->GetLinearVelocity().y < -15) {
+      qDebug() << "You lose!";
+      emit playerLose(it.second);
+    }
+
     // update reward
-    it.second->setReward(it.first->GetPosition().y);
-    qDebug() << it.second->getReward();
+    if (it.first->GetLinearVelocity().y > 0 &&
+        it.first->GetPosition().y > it.second->getReward()) {
+      it.second->setReward(it.first->GetPosition().y);
+      qDebug() << it.second->getReward();
+    }
 
     // move player
     b2Vec2 currentVel = it.first->GetLinearVelocity();
@@ -76,8 +85,6 @@ void GameLogic::step() {
     previousPlatformUpdatePos =
         playerEntityByBody_.begin()->first->GetPosition();
   }
-
-  // calculate reward for players
 
   // global physics step:
   world_.Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
@@ -136,6 +143,7 @@ void GameLogic::updatePlatformPositions() {
 }
 
 GameLogic::GameLogic() : QObject(nullptr) {
+  qRegisterMetaType<std::shared_ptr<PlayerEntity>>();
   world_.SetContactListener(new ContactListener());
 }
 

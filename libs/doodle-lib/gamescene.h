@@ -17,7 +17,6 @@ class GameScene : public QGraphicsScene {
 public:
   explicit GameScene(const QRectF &sceneRect, QObject *parent = nullptr);
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
-  // double getSceneScale() const;
   constexpr static const double SceneScale = 50;
 
 signals:
@@ -31,10 +30,7 @@ private:
   QTimer *mUpdateTimer;
   GameLogic *logic_;
   std::unordered_map<const Entity *, QGraphicsRectItem *> entityToRectItemMap;
-  // const double sceneScale = 50;
   bool isUpdating = false;
-  // QGraphicsRectItem* rectBox;
-  // QGraphicsRectItem* rectGround;
 
 private slots:
   void update();

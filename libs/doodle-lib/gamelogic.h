@@ -38,6 +38,9 @@ public:
 public slots:
   void propagatePressedKey(int key);
 
+signals:
+  void playerLose(std::shared_ptr<PlayerEntity> player);
+
 private:
   explicit GameLogic();
   GameLogic(GameLogic &other) = delete;
@@ -58,5 +61,7 @@ private:
 
   friend class ContactListener;
 };
+
+Q_DECLARE_METATYPE(std::shared_ptr<PlayerEntity>)
 
 #endif // GAMELOGIC_H
