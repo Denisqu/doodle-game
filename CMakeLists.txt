@@ -4,6 +4,10 @@ project(doodle-game VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(libs/doodle-lib)
 include_directories(libs/doodle-lib)
+
+add_subdirectory(libs/ml-lib)
+include_directories(libs/ml-lib)
+
 add_compile_definitions(_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
