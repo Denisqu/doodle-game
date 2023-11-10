@@ -1,0 +1,4 @@
+[submodule "libs/doodle-lib/submodules/pybind11"]
+	path = libs/doodle-lib/submodules/pybind11
+	url = https://github.com/pybind/pybind11.git
+	branch = stable
