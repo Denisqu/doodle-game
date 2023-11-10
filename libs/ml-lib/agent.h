@@ -14,7 +14,7 @@ struct MLLIB_EXPORT Hyperparameters {
 
     int batchSize = 32;
     double gamma = 0.9;
-    int burnin = 1e4; // min. experiences before training
+    double burnin = 1e4; // min. experiences before training
     int learnEvery = 3; // no. of experiences between updates to Q_online
     double syncEvery = 1e4; // no. of experiences between Q_target & Q_online
 };

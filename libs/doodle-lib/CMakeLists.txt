@@ -13,7 +13,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #find_library(LIB_NAME NAMES box2d)
 #link_directories(doodle-lib external/)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/external)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11/include)
+
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
@@ -32,17 +35,14 @@ add_library(doodle-lib SHARED
   entityconstructor.h entityconstructor.cpp
   playerentity.h playerentity.cpp
   contactlistener.h contactlistener.cpp
+  pybindexample.h pybindexample.cpp
 )
 
 target_include_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include/)
 target_link_libraries(doodle-lib PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(doodle-lib PRIVATE box2d)
 
+pybind11_add_module(example pybindexample.cpp)
+
 add_compile_definitions(_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH)
-
-
-
-
-
-
 target_compile_definitions(doodle-lib PRIVATE DOODLELIB_LIBRARY)
