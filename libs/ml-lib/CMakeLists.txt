@@ -5,6 +5,9 @@ project(ml-lib LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(PYTHON_HEADER_LOCATION "C:/Users/Denis/AppData/Local/Programs/Python/Python311/include")
+set(PYTHON_LIB_LOCATION "C:/Users/Denis/AppData/Local/Programs/Python/Python311/libs")
+set(PYBIND11_PYTHON_VERSION 3.11 CACHE STRING "")
 
 #find_package(Torch REQUIRED)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
@@ -12,7 +15,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set_property(TARGET ml-lib PROPERTY CXX_STANDARD 17)
 
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11/include)
+include_directories(${PYTHON_HEADER_LOCATION})
+link_directories(${PYTHON_LIB_LOCATION})
 
 add_library(ml-lib SHARED
   ml-lib_global.h
@@ -20,7 +26,12 @@ add_library(ml-lib SHARED
   mllib.h
   agent.h agent.cpp
   dqn.h dqn.cpp
+  pybindexample.h pybindexample.cpp
 )
+
+pybind11_add_module(pybindexample pybindexample.cpp)
+
+
 
 # The following code block is suggested to be used on Windows.
 # According to https://github.com/pytorch/pytorch/issues/25457,
