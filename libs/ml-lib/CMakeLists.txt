@@ -12,6 +12,8 @@ set(PYBIND11_PYTHON_VERSION 3.11 CACHE STRING "")
 #find_package(Torch REQUIRED)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
 # set_property(TARGET ml-lib PROPERTY CXX_STANDARD 17)
 
@@ -19,6 +21,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/submodules/pybind11/include)
 include_directories(${PYTHON_HEADER_LOCATION})
 link_directories(${PYTHON_LIB_LOCATION})
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../doodle-lib/external)
+
+#libs\doodle-lib
 
 add_library(ml-lib SHARED
   ml-lib_global.h
@@ -26,11 +31,14 @@ add_library(ml-lib SHARED
   mllib.h
   agent.h agent.cpp
   dqn.h dqn.cpp
+  doodleenv.h doodleenv.cpp
   pybindexample.h pybindexample.cpp
 )
 
 pybind11_add_module(pybindexample pybindexample.cpp)
-
+target_include_directories(ml-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../doodle-lib/external/include/)
+target_link_libraries(ml-lib PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(ml-lib PRIVATE doodle-lib box2d)
 
 
 # The following code block is suggested to be used on Windows.
