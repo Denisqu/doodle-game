@@ -19,10 +19,11 @@ public:
   DoodleEnv();
   void make();
   void reset();
-  // nextState, reward, done
+
   std::tuple<Screen *, double, bool> step(Actions action);
 
 private:
+  // Будет жить в другом треде
   std::unique_ptr<doodlelib::View> view_;
 };
 #endif // DOODLEENV_H

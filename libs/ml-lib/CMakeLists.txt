@@ -32,6 +32,7 @@ add_library(ml-lib SHARED
   agent.h agent.cpp
   dqn.h dqn.cpp
   doodleenv.h doodleenv.cpp
+  mlview.h mlview.cpp
   pybindexample.h pybindexample.cpp
 )
 

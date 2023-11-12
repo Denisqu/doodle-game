@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
   view.setRenderHints(QPainter::Antialiasing);
   view.show();
   */
-  qDebug() << ml::MLLib().getTestStringFromTorch().c_str();
 
   return a.exec();
 }
