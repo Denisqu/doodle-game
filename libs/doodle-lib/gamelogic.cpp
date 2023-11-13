@@ -13,7 +13,12 @@ GameLogic *GameLogic::instance_ = nullptr;
 GameLogic::GameLogic()
     : QObject(nullptr), contactListener_(new ContactListener()) {
   qRegisterMetaType<PlayerEntity *>();
-  connect(this, &GameLogic::playerLose, this, &GameLogic::restartGame);
+    connect(this, &GameLogic::playerLose, this, &GameLogic::restartGame);
+}
+
+GameState GameLogic::state() const
+{
+    return state_;
 }
 
 GameLogic *GameLogic::GetInstance() {
@@ -208,6 +213,10 @@ void GameLogic::propagatePressedKey(int key) {
     }
   }
 }
+
+void GameLogic::pause() { state_ = GameState::Pause; }
+
+void GameLogic::unpause() { state_ = GameState::Started; }
 
 std::shared_ptr<Entity> GameLogic::getEnityByBody(b2Body *body) {
   return std::shared_ptr<Entity>(basicEntityByBody_[body]);

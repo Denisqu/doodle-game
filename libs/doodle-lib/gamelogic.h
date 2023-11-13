@@ -42,8 +42,12 @@ public:
   static constexpr double TimeStep = 1.0f / 120;
   static constexpr double TimeStepMultiplier = 1.0f;
 
-public slots:
+  GameState state() const;
+
+  public slots:
   void propagatePressedKey(int key);
+  void pause();
+  void unpause();
 
 signals:
   void playerLose(const PlayerEntity *const player);

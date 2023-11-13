@@ -26,6 +26,9 @@ signals:
   void propagatePressedKey(int key);
   void playerPositionUpdated(QVector<QPointF> newPos);
   void graphicsSceneReseted();
+  void pauseAfterUpdate();
+  void pause();
+  void unpause();
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;
@@ -35,6 +38,7 @@ private:
   GameLogic *logic_;
   std::unordered_map<const Entity *, QGraphicsRectItem *> entityToRectItemMap;
   bool isUpdating = false;
+  bool isPausedAfterUpdate = false;
 
 private slots:
   void update();

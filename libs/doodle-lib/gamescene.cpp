@@ -20,6 +20,8 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
   connect(mUpdateTimer, &QTimer::timeout, this, &GameScene::update);
   connect(this, &GameScene::propagatePressedKey, logic_,
           &GameLogic::propagatePressedKey);
+  connect(this, &GameScene::pause, logic_, &GameLogic::pause);
+  connect(this, &GameScene::unpause, logic_, &GameLogic::unpause);
   connect(logic_, &GameLogic::gameRestartStarted, this,
           &GameScene::resetGraphicsScene);
 
@@ -63,7 +65,7 @@ void GameScene::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameScene::update() {
-  if (isUpdating)
+  if (isUpdating || logic_->state() != GameState::Started)
     return;
   isUpdating = true;
 
