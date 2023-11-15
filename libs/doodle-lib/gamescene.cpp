@@ -53,6 +53,8 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
   return entityToRectItemMap[&entity];
 }
 
+void GameScene::pauseAfterUpdate() { isPausedAfterUpdate = true; }
+
 void GameScene::resetGraphicsScene() {
   entityToRectItemMap =
       std::unordered_map<const Entity *, QGraphicsRectItem *>();
@@ -94,4 +96,9 @@ void GameScene::update() {
   emit playerPositionUpdated(scenePlayerPositions);
 
   isUpdating = false;
+
+  if (isPausedAfterUpdate) {
+    logic_->pause();
+    isPausedAfterUpdate = false;
+  }
 }

@@ -19,6 +19,8 @@ public:
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
   constexpr static const double SceneScale = 50;
 
+  void pauseAfterUpdate();
+
 public slots:
   void resetGraphicsScene();
 
@@ -26,7 +28,6 @@ signals:
   void propagatePressedKey(int key);
   void playerPositionUpdated(QVector<QPointF> newPos);
   void graphicsSceneReseted();
-  void pauseAfterUpdate();
   void pause();
   void unpause();
 

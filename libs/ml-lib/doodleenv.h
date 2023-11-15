@@ -23,7 +23,8 @@ public:
   std::tuple<Screen *, double, bool> step(Actions action);
 
 private:
-  // Будет жить в другом треде
   std::unique_ptr<doodlelib::View> view_;
+
+  void sendFakeKeyPressEventToView(Actions action);
 };
 #endif // DOODLEENV_H

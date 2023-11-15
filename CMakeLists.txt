@@ -7,6 +7,7 @@ include_directories(libs/doodle-lib)
 
 add_subdirectory(libs/ml-lib)
 include_directories(libs/ml-lib)
+include_directories(libs/ml-lib/submodules/jcon-cpp/src/jcon)
 
 add_compile_definitions(_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH)
 
@@ -19,8 +20,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network WebSockets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network WebSockets)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -52,7 +56,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(doodle-game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets doodle-lib ml-lib)
+target_link_libraries(doodle-game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::WebSockets doodle-lib ml-lib)
 
 set_target_properties(doodle-game PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

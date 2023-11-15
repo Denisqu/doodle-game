@@ -2,3 +2,6 @@
 	path = libs/ml-lib/submodules/pybind11
 	url = ../../pybind/pybind11
 	branch = stable
+[submodule "libs/ml-lib/submodules/jcon-cpp"]
+	path = libs/ml-lib/submodules/jcon-cpp
+	url = https://github.com/joncol/jcon-cpp.git
