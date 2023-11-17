@@ -7,7 +7,7 @@
 
 namespace doodlelib {
 
-View::View() : QGraphicsView() {
+View::View(QWidget *widget) : QGraphicsView(widget) {
   QRectF rect(QPointF(0, 0), QPointF(720, 720));
   rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
   oldCenter = rect.center();

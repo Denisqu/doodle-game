@@ -1,13 +1,14 @@
 #ifndef MLVIEW_H
 #define MLVIEW_H
 
+#include "ml-lib_global.h"
 #include "view.h"
 #include <QTimer>
 
-class MLView : public doodlelib::View {
+class MLLIB_EXPORT MLView : public doodlelib::View {
   Q_OBJECT
 public:
-  explicit MLView();
+  explicit MLView(QWidget *parent = nullptr);
 
 private:
   QTimer renderToImageTimer;

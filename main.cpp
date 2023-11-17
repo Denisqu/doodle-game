@@ -2,24 +2,27 @@
 #include <QDebug>
 #include <QThread>
 
+#include "doodleapplication.h"
 #include "libs/doodle-lib/doodlelib.h"
 #include "libs/doodle-lib/view.h"
 #include "mainwindow.h"
 #include "mlclient.h"
 #include "mlserver.h"
+#include "mlview.h"
 
 int main(int argc, char *argv[]) {
-  QApplication a(argc, argv);
+  DoodleApplication a(argc, argv);
 
   constexpr bool isLearning = true;
 
   if constexpr (isLearning) {
+    auto mlview = new MLView();
+    mlview->show();
     // сервер должен сидеть не в main потоке
-    auto serverThread = new QThread(&a);
+    a.serverThread = new QThread(&a);
     auto server = new MLServer(80);
-    server->moveToThread(serverThread);
-    serverThread->start();
-
+    server->moveToThread(a.serverThread);
+    a.serverThread->start();
   } else {
     doodlelib::View view;
     view.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);

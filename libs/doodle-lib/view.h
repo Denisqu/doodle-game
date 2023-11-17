@@ -9,7 +9,7 @@ namespace doodlelib {
 class DOODLELIB_EXPORT View : public QGraphicsView {
   Q_OBJECT
 public:
-  explicit View();
+  explicit View(QWidget *widget = nullptr);
 
 public slots:
   void centerViewOnPlayer(QVector<QPointF> positions);
