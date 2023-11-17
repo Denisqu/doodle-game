@@ -16,6 +16,21 @@ std::optional<Actions> stringToAction(QString string) {
     return {};
 }
 
+std::optional<QJsonObject> stringToJson(QString string) {
+  QByteArray jsonBytes = string.toLocal8Bit();
+  auto jsonDoc = QJsonDocument::fromJson(jsonBytes);
+  if (jsonDoc.isNull()) {
+    qDebug() << "Failed to create JSON doc.";
+    return {};
+  }
+  if (!jsonDoc.isObject()) {
+    qDebug() << "JSON is not an object.";
+    return {};
+  }
+  QJsonObject json = jsonDoc.object();
+  return json;
+}
+
 } // namespace
 
 MLServer::MLServer(quint16 port, QObject *parent)
@@ -56,34 +71,13 @@ void MLServer::processTextMessage(QString msg) {
   if (!pClient)
     return;
 
-  // conver msg to json:
-  QByteArray jsonBytes = msg.toLocal8Bit();
-  auto jsonDoc = QJsonDocument::fromJson(jsonBytes);
-  if (jsonDoc.isNull()) {
-    qDebug() << "Failed to create JSON doc.";
+  auto optionalJson = stringToJson(msg);
+  if (!optionalJson.has_value()) {
+    qDebug() << "invalid json";
     return;
   }
-  if (!jsonDoc.isObject()) {
-    qDebug() << "JSON is not an object.";
-    return;
-  }
-  QJsonObject json = jsonDoc.object();
-
-  // process msg
-  if (json.contains("f") && json["f"] == "make") {
-    qDebug() << "make received";
-    emit make();
-  } else if (json.contains("f") && json["f"] == "reset") {
-    qDebug() << "reset received";
-    emit reset();
-  } else if (json.contains("f") && json["f"] == "step") {
-    auto params = json["params"];
-    qDebug() << "step received with params = " << params;
-
-    auto action = stringToAction(params.toString());
-    if (action.has_value())
-      emit step(action.value());
-  }
+  auto json = optionalJson.value();
+  processReceivedJson(json);
 }
 
 void MLServer::processBinaryMessage(QByteArray msg) {
@@ -102,5 +96,22 @@ void MLServer::socketDisconnected() {
   if (pClient) {
     clients_.removeAll(pClient);
     pClient->deleteLater();
+  }
+}
+
+void MLServer::processReceivedJson(const QJsonObject &json) {
+  if (json.contains("f") && json["f"] == "make") {
+    qDebug() << "make received";
+    emit make();
+  } else if (json.contains("f") && json["f"] == "reset") {
+    qDebug() << "reset received";
+    emit reset();
+  } else if (json.contains("f") && json["f"] == "step") {
+    auto params = json["params"];
+    qDebug() << "step received with params = " << params;
+
+    auto action = stringToAction(params.toString());
+    if (action.has_value())
+      emit step(action.value());
   }
 }

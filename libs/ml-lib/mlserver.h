@@ -31,6 +31,8 @@ private:
   QWebSocketServer *server_ = nullptr;
   QList<QWebSocket *> clients_;
   bool debug_ = true;
+
+  void processReceivedJson(const QJsonObject &json);
 };
 
 #endif // MLSERVER_H
