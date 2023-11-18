@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QDebug>
 
+/*
 MLView::MLView(QWidget *parent)
     : doodlelib::View(parent), renderToImageTimer{} {
   auto gameScene = static_cast<GameScene *>(scene());
@@ -11,3 +12,4 @@ MLView::MLView(QWidget *parent)
       GameLogic::TimeStep * GameLogic::TimeStepMultiplier;
   renderToImageTimer.setInterval(renderToImageInterval * 1000);
 }
+*/

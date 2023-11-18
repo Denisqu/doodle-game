@@ -7,14 +7,15 @@
 
 namespace doodlelib {
 
-View::View(QWidget *widget) : QGraphicsView(widget) {
-  QRectF rect(QPointF(0, 0), QPointF(720, 720));
+View::View(int w, int h, QWidget *widget)
+    : QGraphicsView(widget), h_(h), w_(w) {
+  QRectF rect(QPointF(0, 0), QPointF(600, 600));
   rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
   oldCenter = rect.center();
 
   auto scene = new GameScene(rect, this);
   setScene(scene);
-  resize(720, 720);
+  resize(w, h);
   scale(1, -1);
   fitInView(rect);
 
@@ -22,11 +23,14 @@ View::View(QWidget *widget) : QGraphicsView(widget) {
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+  connect(this, &View::pauseAfterUpdate, scene, &GameScene::pauseAfterUpdate);
+  connect(this, &View::pause, scene, &GameScene::pause);
+  connect(this, &View::unpause, scene, &GameScene::unpause);
   connect(this, &View::restartGame, scene, &GameScene::restartGame);
   connect(scene, &GameScene::playerPositionUpdated, this,
           &View::centerViewOnPlayer);
   connect(scene, &GameScene::graphicsSceneReseted, this, [this] {
-    QRectF rect(QPointF(0, 0), QPointF(720, 720));
+    QRectF rect(QPointF(0, 0), QPointF(w_, h_));
     rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
     oldCenter = rect.center();
   });
@@ -41,7 +45,7 @@ void View::centerViewOnPlayer(QVector<QPointF> positions) {
 
   oldCenter = newCenter;
 
-  QRectF rect(QPointF(0, 0), QPointF(720, 720));
+  QRectF rect(QPointF(0, 0), QPointF(600, 600));
   rect.moveCenter(newCenter);
   fitInView(rect);
   setSceneRect(rect);

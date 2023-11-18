@@ -17,7 +17,8 @@ void DoodleEnv::make() {
   qDebug() << "make in doodle env!!!";
   if (view_.get())
     return;
-  view_ = std::make_unique<doodlelib::View>();
+  view_ = std::make_unique<doodlelib::View>(84, 84);
+  emit view_->pause();
 
   view_->show();
   emit makeEnd();
@@ -40,7 +41,12 @@ void DoodleEnv::reset() {
  * 5) Возвращаем nextState, reward, done
  */
 void DoodleEnv::step(Actions action) {
+  emit view_->pauseAfterUpdate();
   sendFakeKeyPressEventToView(action);
+  emit view_->unpause();
+
+  // render view into image ...
+
   emit stepEnd(std::make_shared<std::tuple<Screen *, double, bool>>());
 }
 

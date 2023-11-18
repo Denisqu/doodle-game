@@ -9,8 +9,10 @@ enum class Actions : unsigned int;
 
 class MLLIB_EXPORT MLView : public doodlelib::View {
   Q_OBJECT
+  using doodlelib::View::View;
+
 public:
-  explicit MLView(QWidget *parent = nullptr);
+  // explicit MLView(QWidget *parent = nullptr);
 
 private:
   QTimer renderToImageTimer;

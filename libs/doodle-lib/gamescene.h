@@ -19,10 +19,9 @@ public:
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
   constexpr static const double SceneScale = 50;
 
-  void pauseAfterUpdate();
-
 public slots:
   void resetGraphicsScene();
+  void pauseAfterUpdate();
 
 signals:
   void propagatePressedKey(int key);
