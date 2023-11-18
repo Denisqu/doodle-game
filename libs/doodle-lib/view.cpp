@@ -22,6 +22,7 @@ View::View(QWidget *widget) : QGraphicsView(widget) {
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+  connect(this, &View::restartGame, scene, &GameScene::restartGame);
   connect(scene, &GameScene::playerPositionUpdated, this,
           &View::centerViewOnPlayer);
   connect(scene, &GameScene::graphicsSceneReseted, this, [this] {

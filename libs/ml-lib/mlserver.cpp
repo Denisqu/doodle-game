@@ -54,9 +54,19 @@ MLServer::~MLServer() {
 
 void MLServer::stepCallback() {}
 
-void MLServer::makeCallback() {}
+void MLServer::makeCallback() {
+  auto json = QJsonObject();
+  json["f"] = "make";
+  json["status"] = true;
+  sendJsonMessage(json);
+}
 
-void MLServer::resetCallback() {}
+void MLServer::resetCallback() {
+  auto json = QJsonObject();
+  json["f"] = "reset";
+  json["status"] = true;
+  sendJsonMessage(json);
+}
 
 void MLServer::onNewConnection() {
   QWebSocket *socket = server_->nextPendingConnection();
@@ -129,6 +139,14 @@ void MLServer::processReceivedJson(const QJsonObject &json) {
   }
 }
 
-void MLServer::sendJsonMessage(QJsonObject &&json) {
-  auto pClient = qobject_cast<QWebSocket *>(sender());
+void MLServer::sendJsonMessage(const QJsonObject &json) {
+  auto pClient = clients_.count() > 0 ? clients_[0] : nullptr;
+  if (!pClient)
+    return;
+
+  auto doc = QJsonDocument(json);
+  QByteArray jsonMessage(doc.toJson(QJsonDocument::Compact));
+  QString stringMessage = QString::fromUtf8(jsonMessage);
+
+  pClient->sendTextMessage(stringMessage);
 }

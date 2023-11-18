@@ -30,6 +30,7 @@ signals:
   void graphicsSceneReseted();
   void pause();
   void unpause();
+  void restartGame();
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;

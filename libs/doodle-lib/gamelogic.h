@@ -24,6 +24,8 @@ class GameLogic : public QObject {
 
 public:
   static GameLogic *GetInstance();
+  static constexpr double TimeStep = 1.0f / 120;
+  static constexpr double TimeStepMultiplier = 1.0f;
 
   b2Body *addEntity(std::unique_ptr<Entity> entity);
   void
@@ -37,17 +39,13 @@ public:
   void updatePlatformPositions(
       PlatformGenerationState state = PlatformGenerationState::Default);
   void startGame();
-  void restartGame();
-
-  static constexpr double TimeStep = 1.0f / 120;
-  static constexpr double TimeStepMultiplier = 1.0f;
-
   GameState state() const;
 
-  public slots:
+public slots:
   void propagatePressedKey(int key);
   void pause();
   void unpause();
+  void restartGame();
 
 signals:
   void playerLose(const PlayerEntity *const player);

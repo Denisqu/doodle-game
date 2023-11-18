@@ -2,7 +2,7 @@
 #define DOODLEENV_H
 
 #include "ml-lib_global.h"
-#include "view.h"
+#include "mlview.h"
 #include <QObject>
 #include <memory>
 #include <tuple>
@@ -21,7 +21,7 @@ public:
   DoodleEnv(QObject *parent = nullptr);
 
 signals:
-  void stepEnd(std::tuple<Screen *, double, bool> &&stepData);
+  void stepEnd(std::shared_ptr<std::tuple<Screen *, double, bool>> stepData);
   void makeEnd();
   void resetEnd();
 

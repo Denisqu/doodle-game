@@ -34,7 +34,7 @@ private slots:
 
 private:
   void processReceivedJson(const QJsonObject &json);
-  void sendJsonMessage(QJsonObject &&json);
+  void sendJsonMessage(const QJsonObject &json);
 
   QWebSocketServer *server_ = nullptr;
   QList<QWebSocket *> clients_;

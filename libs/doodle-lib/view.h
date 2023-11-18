@@ -14,6 +14,9 @@ public:
 public slots:
   void centerViewOnPlayer(QVector<QPointF> positions);
 
+signals:
+  void restartGame();
+
   // QWidget interface
 protected:
   virtual void keyPressEvent(QKeyEvent *event) override;

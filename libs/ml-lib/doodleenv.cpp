@@ -1,4 +1,5 @@
 #include "doodleenv.h"
+#include "gamelogic.h"
 #include "gamescene.h"
 #include <QApplication>
 #include <QKeyEvent>
@@ -10,14 +11,18 @@ DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {}
  *
  */
 void DoodleEnv::make() {
+  if (view_.get())
+    return;
   view_ = std::make_unique<doodlelib::View>();
+
   view_->show();
   emit makeEnd();
 }
 
 void DoodleEnv::reset() {
-  view_.reset();
-  this->make();
+  if (!view_.get())
+    return;
+  emit view_.get()->restartGame();
   emit resetEnd();
 }
 
@@ -31,8 +36,7 @@ void DoodleEnv::reset() {
  * 5) Возвращаем nextState, reward, done
  */
 void DoodleEnv::step(Actions action) {
-
-  emit stepEnd(std::tuple<Screen *, double, bool>());
+  emit stepEnd(std::make_shared<std::tuple<Screen *, double, bool>>());
 }
 
 void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {

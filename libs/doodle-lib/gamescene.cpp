@@ -24,6 +24,7 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
   connect(this, &GameScene::unpause, logic_, &GameLogic::unpause);
   connect(logic_, &GameLogic::gameRestartStarted, this,
           &GameScene::resetGraphicsScene);
+  connect(this, &GameScene::restartGame, logic_, &GameLogic::restartGame);
 
   // register callback
   logic_->addOnAddEntityCallback([this](const Entity &entity) {
