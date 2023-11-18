@@ -2,15 +2,19 @@
 #include "gamelogic.h"
 #include "gamescene.h"
 #include <QApplication>
+#include <QDebug>
 #include <QKeyEvent>
 
-DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {}
+DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {
+  qRegisterMetaType<Actions>();
+}
 
 /*
  * Создаём
  *
  */
 void DoodleEnv::make() {
+  qDebug() << "make in doodle env!!!";
   if (view_.get())
     return;
   view_ = std::make_unique<doodlelib::View>();
@@ -36,13 +40,25 @@ void DoodleEnv::reset() {
  * 5) Возвращаем nextState, reward, done
  */
 void DoodleEnv::step(Actions action) {
+  sendFakeKeyPressEventToView(action);
   emit stepEnd(std::make_shared<std::tuple<Screen *, double, bool>>());
 }
 
 void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {
-  // QKeyEvent *key_press =
-  //    new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_X, Qt::NoModifier, "X");
-  //                                                                          text
-  //                                                                          ─────┘
-  // QApplication::sendEvent(ui->lineEdit, key_press);
+  QKeyEvent *keyEvent = nullptr;
+  switch (action) {
+  case Actions::Left:
+    keyEvent =
+        new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_A, Qt::NoModifier, "A");
+    break;
+  case Actions::Right:
+    keyEvent =
+        new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_D, Qt::NoModifier, "D");
+    break;
+  default:
+    break;
+  }
+
+  qDebug() << "sending fakeKeyPressEvent! " << keyEvent->key();
+  QApplication::sendEvent(view_.get(), keyEvent);
 }

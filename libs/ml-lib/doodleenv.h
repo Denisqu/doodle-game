@@ -8,6 +8,7 @@
 #include <tuple>
 
 enum class Actions : unsigned int { Left = 0, Right };
+Q_DECLARE_METATYPE(Actions)
 
 struct Screen {
   unsigned char data[120][120][3];

@@ -8,9 +8,9 @@
 namespace {
 
 std::optional<Actions> stringToAction(QString string) {
-  if (string == "LEFT")
+  if (string == "L")
     return Actions::Left;
-  else if (string == "RIGHT")
+  else if (string == "R")
     return Actions::Right;
   else
     return {};
@@ -131,11 +131,12 @@ void MLServer::processReceivedJson(const QJsonObject &json) {
     emit reset();
   } else if (json.contains("f") && json["f"] == "step") {
     auto params = json["params"];
-    qDebug() << "step received with params = " << params;
+    qDebug() << "step received with params = " << params.toString();
 
     auto action = stringToAction(params.toString());
-    if (action.has_value())
+    if (action.has_value()) {
       emit step(action.value());
+    }
   }
 }
 
