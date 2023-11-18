@@ -3,6 +3,7 @@
 #include <QThread>
 
 #include "doodleapplication.h"
+#include "doodleenv.h"
 #include "libs/doodle-lib/doodlelib.h"
 #include "libs/doodle-lib/view.h"
 #include "mainwindow.h"
@@ -16,12 +17,16 @@ int main(int argc, char *argv[]) {
   constexpr bool isLearning = true;
 
   if constexpr (isLearning) {
-    auto mlview = new MLView();
-    mlview->show();
+    auto env = new DoodleEnv(&a);
     // сервер должен сидеть не в main потоке
     a.serverThread = new QThread(&a);
     auto server = new MLServer(80);
     server->moveToThread(a.serverThread);
+
+    QObject::connect(server, &MLServer::make, env, &DoodleEnv::make);
+    QObject::connect(server, &MLServer::reset, env, &DoodleEnv::reset);
+    // QObject::connect(server, &MLServer::step, env, &DoodleEnv::reset);
+
     a.serverThread->start();
   } else {
     doodlelib::View view;

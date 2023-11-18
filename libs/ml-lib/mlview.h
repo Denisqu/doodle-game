@@ -5,6 +5,8 @@
 #include "view.h"
 #include <QTimer>
 
+enum class Actions : unsigned int;
+
 class MLLIB_EXPORT MLView : public doodlelib::View {
   Q_OBJECT
 public:

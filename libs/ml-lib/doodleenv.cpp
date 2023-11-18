@@ -1,14 +1,18 @@
 #include "doodleenv.h"
+#include "gamescene.h"
 #include <QApplication>
 #include <QKeyEvent>
 
-DoodleEnv::DoodleEnv() {}
+DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {}
 
 /*
  * Создаём
  *
  */
-void DoodleEnv::make() { view_ = std::make_unique<doodlelib::View>(); }
+void DoodleEnv::make() {
+  view_ = std::make_unique<doodlelib::View>();
+  view_->show();
+}
 
 void DoodleEnv::reset() {
   view_.reset();

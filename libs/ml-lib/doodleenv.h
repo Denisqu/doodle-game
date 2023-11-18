@@ -1,8 +1,9 @@
 #ifndef DOODLEENV_H
 #define DOODLEENV_H
 
-#include "gamescene.h"
+#include "ml-lib_global.h"
 #include "view.h"
+#include <QObject>
 #include <memory>
 #include <tuple>
 
@@ -14,12 +15,14 @@ struct Screen {
 
 // https://pybind11.readthedocs.io/en/stable/classes.html
 // https://www.gymlibrary.dev/content/environment_creation/
-class DoodleEnv {
+class MLLIB_EXPORT DoodleEnv : public QObject {
+  Q_OBJECT
 public:
-  DoodleEnv();
+  DoodleEnv(QObject *parent = nullptr);
+
+public slots:
   void make();
   void reset();
-
   std::tuple<Screen *, double, bool> step(Actions action);
 
 private:
