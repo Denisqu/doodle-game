@@ -38,6 +38,7 @@ MLServer::MLServer(quint16 port, QObject *parent)
       server_(new QWebSocketServer(QStringLiteral("Echo Server"),
                                    QWebSocketServer::NonSecureMode, this)) {
   if (server_->listen(QHostAddress::Any, port)) {
+    server_->setMaxPendingConnections(1);
     if (debug_)
       qDebug() << "MLServer listening on port" << port;
     connect(server_, &QWebSocketServer::newConnection, this,
@@ -51,8 +52,20 @@ MLServer::~MLServer() {
   qDeleteAll(clients_.begin(), clients_.end());
 }
 
+void MLServer::stepCallback() {}
+
+void MLServer::makeCallback() {}
+
+void MLServer::resetCallback() {}
+
 void MLServer::onNewConnection() {
   QWebSocket *socket = server_->nextPendingConnection();
+
+  if (clients_.size() > 0) {
+    socket->close(QWebSocketProtocol::CloseCodeAbnormalDisconnection);
+    delete socket;
+    return;
+  }
 
   connect(socket, &QWebSocket::textMessageReceived, this,
           &MLServer::processTextMessage);
@@ -85,7 +98,7 @@ void MLServer::processBinaryMessage(QByteArray msg) {
   if (debug_)
     qDebug() << "Binary Message received:" << msg;
   if (pClient) {
-    pClient->sendBinaryMessage(msg);
+    // pClient->sendBinaryMessage(msg);
   }
 }
 
@@ -114,4 +127,8 @@ void MLServer::processReceivedJson(const QJsonObject &json) {
     if (action.has_value())
       emit step(action.value());
   }
+}
+
+void MLServer::sendJsonMessage(QJsonObject &&json) {
+  auto pClient = qobject_cast<QWebSocket *>(sender());
 }

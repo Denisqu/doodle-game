@@ -20,10 +20,15 @@ class MLLIB_EXPORT DoodleEnv : public QObject {
 public:
   DoodleEnv(QObject *parent = nullptr);
 
+signals:
+  void stepEnd(std::tuple<Screen *, double, bool> &&stepData);
+  void makeEnd();
+  void resetEnd();
+
 public slots:
   void make();
   void reset();
-  std::tuple<Screen *, double, bool> step(Actions action);
+  void step(Actions action);
 
 private:
   std::unique_ptr<doodlelib::View> view_;

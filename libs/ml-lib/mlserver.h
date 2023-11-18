@@ -13,6 +13,11 @@ public:
   explicit MLServer(quint16 port, QObject *parent = nullptr);
   ~MLServer();
 
+public slots:
+  void stepCallback();
+  void makeCallback();
+  void resetCallback();
+
 signals:
   // websocket server signals
   void closed();
@@ -28,11 +33,12 @@ private slots:
   void socketDisconnected();
 
 private:
+  void processReceivedJson(const QJsonObject &json);
+  void sendJsonMessage(QJsonObject &&json);
+
   QWebSocketServer *server_ = nullptr;
   QList<QWebSocket *> clients_;
   bool debug_ = true;
-
-  void processReceivedJson(const QJsonObject &json);
 };
 
 #endif // MLSERVER_H

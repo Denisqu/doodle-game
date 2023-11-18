@@ -12,11 +12,13 @@ DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {}
 void DoodleEnv::make() {
   view_ = std::make_unique<doodlelib::View>();
   view_->show();
+  emit makeEnd();
 }
 
 void DoodleEnv::reset() {
   view_.reset();
   this->make();
+  emit resetEnd();
 }
 
 /*
@@ -28,8 +30,9 @@ void DoodleEnv::reset() {
  * (см. https://doc.qt.io/qt-5/qgraphicsview.html#render)
  * 5) Возвращаем nextState, reward, done
  */
-std::tuple<Screen *, double, bool> DoodleEnv::step(Actions action) {
-  return std::tuple<Screen *, double, bool>();
+void DoodleEnv::step(Actions action) {
+
+  emit stepEnd(std::tuple<Screen *, double, bool>());
 }
 
 void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {
