@@ -35,16 +35,11 @@ View::View(int w, int h, QWidget *widget)
   });
 }
 
-QImage *View::renderViewToImage() {
-  // TODO: УБРАТЬ УТЕЧКУ ПАМЯТИ!!!
-  QImage *img = new QImage(this->size(), QImage::Format::Format_Grayscale8);
-  QPainter painter(img);
-
+void View::renderViewToImage(QImage &renderedImage) {
+  QPainter painter(&renderedImage);
   QRect renderRect =
       QRect(QPoint(0, 0), QPoint(this->size().width(), this->size().height()));
   this->render(&painter, renderRect);
-
-  return img;
 }
 
 void View::centerViewOnPlayer(QVector<QPointF> positions) {

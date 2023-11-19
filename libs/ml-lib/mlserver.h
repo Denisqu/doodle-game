@@ -1,6 +1,7 @@
 #ifndef MLSERVER_H
 #define MLSERVER_H
 
+#include "doodleenv.h"
 #include "ml-lib_global.h"
 #include <QObject>
 #include <QWebSocketServer>
@@ -14,7 +15,7 @@ public:
   ~MLServer();
 
 public slots:
-  void stepCallback();
+  void stepCallback(DoodleEnv::StepDataPtr data);
   void makeCallback();
   void resetCallback();
 

@@ -2,11 +2,13 @@
 #include "gamelogic.h"
 #include "gamescene.h"
 #include <QApplication>
+#include <QBuffer>
 #include <QDebug>
 #include <QKeyEvent>
 
 DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {
   qRegisterMetaType<Actions>();
+  qRegisterMetaType<StepDataPtr>();
 }
 
 /*
@@ -46,17 +48,26 @@ void DoodleEnv::step(Actions action) {
   emit view_->unpause();
 
   // render view into image
-  QImage *img = view_->renderViewToImage();
+  QImage *img = new QImage(view_->size(), QImage::Format::Format_RGB16);
+  view_->renderViewToImage(*img);
+
+  QByteArray byteArray;
+  QBuffer buffer(&byteArray);
+  img->save(&buffer,
+            "PNG"); // writes the image in PNG format inside the buffer
+  QString iconBase64 = QString::fromLatin1(byteArray.toBase64().data());
+
   // convet QImage into buffer
-  QByteArray data =
-      QByteArray::fromRawData(reinterpret_cast<const char *>(img->constBits()),
-                              static_cast<int>(img->sizeInBytes()));
+  // QByteArray data =
+  //  QByteArray::fromRawData(reinterpret_cast<const char *>(img->constBits()),
+  //                        static_cast<int>(img->sizeInBytes()));
   // QString strContent = data.toBase64();
-  qDebug() << "data = " << data;
+  // qDebug() << "data = " << data;
   // https://forum.qt.io/topic/116082/transferring-an-image-from-server-to-client-raw-data-of-a-qimage/5
   // https://stackoverflow.com/questions/32376119/how-to-store-a-qpixmap-in-json-via-qbytearray
 
-  emit stepEnd(std::make_shared<std::tuple<Screen *, double, bool>>());
+  emit stepEnd(std::make_shared<std::tuple<QString, double, bool>>(iconBase64,
+                                                                   100, false));
 }
 
 void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {

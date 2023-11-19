@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(env, &DoodleEnv::makeEnd, server, &MLServer::makeCallback);
     QObject::connect(env, &DoodleEnv::resetEnd, server,
                      &MLServer::resetCallback);
+    QObject::connect(env, &DoodleEnv::stepEnd, server, &MLServer::stepCallback);
 
     a.serverThread->start();
   } else {

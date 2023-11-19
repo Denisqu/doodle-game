@@ -20,9 +20,10 @@ class MLLIB_EXPORT DoodleEnv : public QObject {
   Q_OBJECT
 public:
   DoodleEnv(QObject *parent = nullptr);
+  using StepDataPtr = std::shared_ptr<std::tuple<QString, double, bool>>;
 
 signals:
-  void stepEnd(std::shared_ptr<std::tuple<Screen *, double, bool>> stepData);
+  void stepEnd(DoodleEnv::StepDataPtr stepData);
   void makeEnd();
   void resetEnd();
 
@@ -36,4 +37,7 @@ private:
 
   void sendFakeKeyPressEventToView(Actions action);
 };
+
+Q_DECLARE_METATYPE(DoodleEnv::StepDataPtr)
+
 #endif // DOODLEENV_H

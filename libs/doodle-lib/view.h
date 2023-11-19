@@ -11,7 +11,7 @@ class DOODLELIB_EXPORT View : public QGraphicsView {
 public:
   explicit View(int w = 720, int h = 720, QWidget *widget = nullptr);
 
-  void *renderViewToImage(QImage &renderedImage);
+  void renderViewToImage(QImage &renderedImage);
 
 public slots:
   void centerViewOnPlayer(QVector<QPointF> positions);

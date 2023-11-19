@@ -52,7 +52,16 @@ MLServer::~MLServer() {
   qDeleteAll(clients_.begin(), clients_.end());
 }
 
-void MLServer::stepCallback() {}
+void MLServer::stepCallback(
+    std::shared_ptr<std::tuple<QString, double, bool>> data) {
+  auto json = QJsonObject();
+  json["f"] = "step";
+  json["status"] = true;
+  json["base64-frame"] = std::get<0>(*data);
+  json["reward"] = std::get<1>(*data);
+  json["is-terminal"] = std::get<2>(*data);
+  sendJsonMessage(json);
+}
 
 void MLServer::makeCallback() {
   auto json = QJsonObject();
