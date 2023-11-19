@@ -45,7 +45,16 @@ void DoodleEnv::step(Actions action) {
   sendFakeKeyPressEventToView(action);
   emit view_->unpause();
 
-  // render view into image ...
+  // render view into image
+  QImage *img = view_->renderViewToImage();
+  // convet QImage into buffer
+  QByteArray data =
+      QByteArray::fromRawData(reinterpret_cast<const char *>(img->constBits()),
+                              static_cast<int>(img->sizeInBytes()));
+  // QString strContent = data.toBase64();
+  qDebug() << "data = " << data;
+  // https://forum.qt.io/topic/116082/transferring-an-image-from-server-to-client-raw-data-of-a-qimage/5
+  // https://stackoverflow.com/questions/32376119/how-to-store-a-qpixmap-in-json-via-qbytearray
 
   emit stepEnd(std::make_shared<std::tuple<Screen *, double, bool>>());
 }

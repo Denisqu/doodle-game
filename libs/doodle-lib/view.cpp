@@ -9,15 +9,14 @@ namespace doodlelib {
 
 View::View(int w, int h, QWidget *widget)
     : QGraphicsView(widget), h_(h), w_(w) {
-  QRectF rect(QPointF(0, 0), QPointF(600, 600));
-  rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
-  oldCenter = rect.center();
+  viewportRect_.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
+  oldCenter_ = viewportRect_.center();
 
-  auto scene = new GameScene(rect, this);
+  auto scene = new GameScene(viewportRect_, this);
   setScene(scene);
   resize(w, h);
   scale(1, -1);
-  fitInView(rect);
+  fitInView(viewportRect_);
 
   setDragMode(QGraphicsView::NoDrag);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -32,23 +31,34 @@ View::View(int w, int h, QWidget *widget)
   connect(scene, &GameScene::graphicsSceneReseted, this, [this] {
     QRectF rect(QPointF(0, 0), QPointF(w_, h_));
     rect.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
-    oldCenter = rect.center();
+    oldCenter_ = rect.center();
   });
 }
 
-void View::centerViewOnPlayer(QVector<QPointF> positions) {
-  auto playerPos = QPointF(oldCenter.x(), positions[0].y());
-  auto newCenter = oldCenter + (playerPos - oldCenter) / 25;
+QImage *View::renderViewToImage() {
+  // TODO: УБРАТЬ УТЕЧКУ ПАМЯТИ!!!
+  QImage *img = new QImage(this->size(), QImage::Format::Format_Grayscale8);
+  QPainter painter(img);
 
-  if (newCenter.y() <= oldCenter.y())
+  QRect renderRect =
+      QRect(QPoint(0, 0), QPoint(this->size().width(), this->size().height()));
+  this->render(&painter, renderRect);
+
+  return img;
+}
+
+void View::centerViewOnPlayer(QVector<QPointF> positions) {
+  auto playerPos = QPointF(oldCenter_.x(), positions[0].y());
+  auto newCenter = oldCenter_ + (playerPos - oldCenter_) / 25;
+
+  if (newCenter.y() <= oldCenter_.y())
     return;
 
-  oldCenter = newCenter;
+  oldCenter_ = newCenter;
 
-  QRectF rect(QPointF(0, 0), QPointF(600, 600));
-  rect.moveCenter(newCenter);
-  fitInView(rect);
-  setSceneRect(rect);
+  viewportRect_.moveCenter(newCenter);
+  fitInView(viewportRect_);
+  setSceneRect(viewportRect_);
 }
 
 /**

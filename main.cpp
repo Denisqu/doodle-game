@@ -24,11 +24,11 @@ int main(int argc, char *argv[]) {
     server->moveToThread(a.serverThread);
 
     QObject::connect(server, &MLServer::make, env, &DoodleEnv::make);
-    QObject::connect(env, &DoodleEnv::makeEnd, server, &MLServer::makeCallback);
     QObject::connect(server, &MLServer::reset, env, &DoodleEnv::reset);
+    QObject::connect(server, &MLServer::step, env, &DoodleEnv::step);
+    QObject::connect(env, &DoodleEnv::makeEnd, server, &MLServer::makeCallback);
     QObject::connect(env, &DoodleEnv::resetEnd, server,
                      &MLServer::resetCallback);
-    QObject::connect(server, &MLServer::step, env, &DoodleEnv::step);
 
     a.serverThread->start();
   } else {

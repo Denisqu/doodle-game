@@ -11,6 +11,8 @@ class DOODLELIB_EXPORT View : public QGraphicsView {
 public:
   explicit View(int w = 720, int h = 720, QWidget *widget = nullptr);
 
+  void *renderViewToImage(QImage &renderedImage);
+
 public slots:
   void centerViewOnPlayer(QVector<QPointF> positions);
 
@@ -27,7 +29,8 @@ protected:
   int w_;
 
 private:
-  QPointF oldCenter;
+  QPointF oldCenter_;
+  QRectF viewportRect_ = QRectF(QPointF(0, 0), QPointF(840, 840));
 };
 
 } // namespace doodlelib
