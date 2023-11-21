@@ -20,6 +20,9 @@ public:
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
   constexpr static const double SceneScale = 50;
 
+  // костыль для обучения, нужно зарефакторить
+  std::tuple<double, bool> getInfoForLearning();
+
 public slots:
   void resetGraphicsScene();
   void pauseAfterUpdate();

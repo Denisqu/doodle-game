@@ -49,6 +49,7 @@ void DoodleEnv::step(Actions action) {
   sendFakeKeyPressEventToView(action);
   emit view_->unpause();
   emit view_->manualSceneUpdate();
+  emit view_->pause();
 
   QString base64Image = getBase64ViewImage();
 

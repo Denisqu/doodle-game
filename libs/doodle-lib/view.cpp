@@ -43,6 +43,11 @@ void View::renderViewToImage(QImage &renderedImage) {
   this->render(&painter, renderRect);
 }
 
+std::tuple<double, bool> View::getInfoForLearning() {
+  auto scene = static_cast<GameScene *>(this->scene());
+  return {}
+}
+
 void View::centerViewOnPlayer(QVector<QPointF> positions) {
   auto playerPos = QPointF(oldCenter_.x(), positions[0].y());
   auto newCenter = oldCenter_ + (playerPos - oldCenter_) / 25;

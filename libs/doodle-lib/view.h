@@ -14,6 +14,9 @@ public:
 
   void renderViewToImage(QImage &renderedImage);
 
+  // костыль для обучения, нужно будет зарефакторить
+  std::tuple<double, bool> getInfoForLearning();
+
 public slots:
   void centerViewOnPlayer(QVector<QPointF> positions);
 

@@ -56,6 +56,8 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
   return entityToRectItemMap_[&entity];
 }
 
+std::tuple<double, bool> GameScene::getInfoForLearning() {}
+
 void GameScene::pauseAfterUpdate() { isPausedAfterUpdate_ = true; }
 
 void GameScene::resetGraphicsScene() {
