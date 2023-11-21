@@ -70,10 +70,11 @@ void MLServer::makeCallback() {
   sendJsonMessage(json);
 }
 
-void MLServer::resetCallback() {
+void MLServer::resetCallback(QString state) {
   auto json = QJsonObject();
   json["f"] = "reset";
   json["status"] = true;
+  json["base64-frame"] = state;
   sendJsonMessage(json);
 }
 

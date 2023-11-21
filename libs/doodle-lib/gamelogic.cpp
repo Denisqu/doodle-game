@@ -13,13 +13,10 @@ GameLogic *GameLogic::instance_ = nullptr;
 GameLogic::GameLogic()
     : QObject(nullptr), contactListener_(new ContactListener()) {
   qRegisterMetaType<PlayerEntity *>();
-    connect(this, &GameLogic::playerLose, this, &GameLogic::restartGame);
+  connect(this, &GameLogic::playerLose, this, &GameLogic::restartGame);
 }
 
-GameState GameLogic::state() const
-{
-    return state_;
-}
+GameState GameLogic::state() const { return state_; }
 
 GameLogic *GameLogic::GetInstance() {
   if (instance_ == nullptr)
@@ -52,6 +49,7 @@ void GameLogic::step() {
         it.first->GetPosition().y > it.second->getReward()) {
       it.second->setReward(it.first->GetPosition().y);
       qDebug() << it.second->getReward();
+      playerReward = it.second->getReward();
     }
 
     // move player

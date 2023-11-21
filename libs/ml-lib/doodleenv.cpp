@@ -30,7 +30,9 @@ void DoodleEnv::reset() {
   if (!view_.get())
     return;
   emit view_.get()->restartGame();
-  emit resetEnd();
+
+  QString state = getBase64ViewImage();
+  emit resetEnd(state);
 }
 
 /*
@@ -43,30 +45,14 @@ void DoodleEnv::reset() {
  * 5) Возвращаем nextState, reward, done
  */
 void DoodleEnv::step(Actions action) {
-  emit view_->pauseAfterUpdate();
+  // emit view_->pauseAfterUpdate();
   sendFakeKeyPressEventToView(action);
   emit view_->unpause();
+  emit view_->manualSceneUpdate();
 
-  // render view into image
-  QImage *img = new QImage(view_->size(), QImage::Format::Format_RGB16);
-  view_->renderViewToImage(*img);
+  QString base64Image = getBase64ViewImage();
 
-  QByteArray byteArray;
-  QBuffer buffer(&byteArray);
-  img->save(&buffer,
-            "PNG"); // writes the image in PNG format inside the buffer
-  QString iconBase64 = QString::fromLatin1(byteArray.toBase64().data());
-
-  // convet QImage into buffer
-  // QByteArray data =
-  //  QByteArray::fromRawData(reinterpret_cast<const char *>(img->constBits()),
-  //                        static_cast<int>(img->sizeInBytes()));
-  // QString strContent = data.toBase64();
-  // qDebug() << "data = " << data;
-  // https://forum.qt.io/topic/116082/transferring-an-image-from-server-to-client-raw-data-of-a-qimage/5
-  // https://stackoverflow.com/questions/32376119/how-to-store-a-qpixmap-in-json-via-qbytearray
-
-  emit stepEnd(std::make_shared<std::tuple<QString, double, bool>>(iconBase64,
+  emit stepEnd(std::make_shared<std::tuple<QString, double, bool>>(base64Image,
                                                                    100, false));
 }
 
@@ -85,6 +71,14 @@ void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {
     break;
   }
 
-  qDebug() << "sending fakeKeyPressEvent! " << keyEvent->key();
   QApplication::sendEvent(view_.get(), keyEvent);
+}
+
+QString DoodleEnv::getBase64ViewImage() {
+  screenImage = QImage(view_->size(), QImage::Format::Format_RGB16);
+  view_->renderViewToImage(screenImage);
+  QByteArray byteArray;
+  QBuffer buffer(&byteArray);
+  screenImage.save(&buffer, "PNG");
+  return QString::fromLatin1(byteArray.toBase64().data());
 }

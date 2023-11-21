@@ -13,11 +13,12 @@
 #include <QRandomGenerator>
 #include <algorithm>
 
-GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
-    : QGraphicsScene(sceneRect, parent), mUpdateTimer{new QTimer(this)},
-      logic_(GameLogic::GetInstance()) {
+GameScene::GameScene(const QRectF &sceneRect, bool isManualUpdated,
+                     QObject *parent)
+    : QGraphicsScene(sceneRect, parent), mUpdateTimer_{new QTimer(this)},
+      logic_(GameLogic::GetInstance()), isManualUpdated_(isManualUpdated) {
 
-  connect(mUpdateTimer, &QTimer::timeout, this, &GameScene::update);
+  connect(mUpdateTimer_, &QTimer::timeout, this, &GameScene::update);
   connect(this, &GameScene::propagatePressedKey, logic_,
           &GameLogic::propagatePressedKey);
   connect(this, &GameScene::pause, logic_, &GameLogic::pause);
@@ -38,7 +39,7 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
     brushColor.setAlpha(50);
     auto pen = QPen(penColor);
     auto brush = QBrush(brushColor, Qt::BrushStyle::SolidPattern);
-    entityToRectItemMap[&entity] = this->addRect(rect, pen, brush);
+    entityToRectItemMap_[&entity] = this->addRect(rect, pen, brush);
   });
 
   logic_->setSceneHorizontalBounds(
@@ -47,17 +48,18 @@ GameScene::GameScene(const QRectF &sceneRect, QObject *parent)
 
   logic_->startGame();
 
-  mUpdateTimer->start(GameLogic::TimeStep * 1000);
+  if (!isManualUpdated)
+    mUpdateTimer_->start(GameLogic::TimeStep * 1000);
 }
 
 QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
-  return entityToRectItemMap[&entity];
+  return entityToRectItemMap_[&entity];
 }
 
-void GameScene::pauseAfterUpdate() { isPausedAfterUpdate = true; }
+void GameScene::pauseAfterUpdate() { isPausedAfterUpdate_ = true; }
 
 void GameScene::resetGraphicsScene() {
-  entityToRectItemMap =
+  entityToRectItemMap_ =
       std::unordered_map<const Entity *, QGraphicsRectItem *>();
   this->clear();
   emit graphicsSceneReseted();
@@ -68,9 +70,9 @@ void GameScene::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameScene::update() {
-  if (isUpdating || logic_->state() != GameState::Started)
+  if (isUpdating_ || logic_->state() != GameState::Started)
     return;
-  isUpdating = true;
+  isUpdating_ = true;
 
   // update logic
   logic_->step();
@@ -96,10 +98,10 @@ void GameScene::update() {
                 });
   emit playerPositionUpdated(scenePlayerPositions);
 
-  isUpdating = false;
+  isUpdating_ = false;
 
-  if (isPausedAfterUpdate) {
+  if (isPausedAfterUpdate_) {
     logic_->pause();
-    isPausedAfterUpdate = false;
+    isPausedAfterUpdate_ = false;
   }
 }

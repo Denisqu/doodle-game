@@ -25,7 +25,7 @@ public:
 signals:
   void stepEnd(DoodleEnv::StepDataPtr stepData);
   void makeEnd();
-  void resetEnd();
+  void resetEnd(QString state);
 
 public slots:
   void make();
@@ -34,8 +34,10 @@ public slots:
 
 private:
   std::unique_ptr<doodlelib::View> view_;
+  QImage screenImage;
 
   void sendFakeKeyPressEventToView(Actions action);
+  QString getBase64ViewImage();
 };
 
 Q_DECLARE_METATYPE(DoodleEnv::StepDataPtr)

@@ -40,6 +40,7 @@ public:
       PlatformGenerationState state = PlatformGenerationState::Default);
   void startGame();
   GameState state() const;
+  double getPlayerReward();
 
 public slots:
   void propagatePressedKey(int key);
@@ -73,6 +74,9 @@ private:
   GameState state_ = GameState::Invalid;
 
   b2Vec2 previousPlatformUpdatePos_{};
+
+  // костыль для обучения
+  double playerReward;
 
   friend class ContactListener;
 };

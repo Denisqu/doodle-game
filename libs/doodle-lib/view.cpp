@@ -7,12 +7,12 @@
 
 namespace doodlelib {
 
-View::View(int w, int h, QWidget *widget)
-    : QGraphicsView(widget), h_(h), w_(w) {
+View::View(int w, int h, bool isManualUpdated, QWidget *widget)
+    : QGraphicsView(widget), h_(h), w_(w), isManualUpdated_(isManualUpdated) {
   viewportRect_.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
   oldCenter_ = viewportRect_.center();
 
-  auto scene = new GameScene(viewportRect_, this);
+  auto scene = new GameScene(viewportRect_, isManualUpdated_, this);
   setScene(scene);
   resize(w, h);
   scale(1, -1);
@@ -22,6 +22,7 @@ View::View(int w, int h, QWidget *widget)
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+  connect(this, &View::manualSceneUpdate, scene, &GameScene::update);
   connect(this, &View::pauseAfterUpdate, scene, &GameScene::pauseAfterUpdate);
   connect(this, &View::pause, scene, &GameScene::pause);
   connect(this, &View::unpause, scene, &GameScene::unpause);

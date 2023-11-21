@@ -17,7 +17,7 @@ public:
 public slots:
   void stepCallback(DoodleEnv::StepDataPtr data);
   void makeCallback();
-  void resetCallback();
+  void resetCallback(QString state);
 
 signals:
   // websocket server signals

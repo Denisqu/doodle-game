@@ -9,7 +9,8 @@ namespace doodlelib {
 class DOODLELIB_EXPORT View : public QGraphicsView {
   Q_OBJECT
 public:
-  explicit View(int w = 720, int h = 720, QWidget *widget = nullptr);
+  explicit View(int w = 720, int h = 720, bool isManualUpdated = false,
+                QWidget *widget = nullptr);
 
   void renderViewToImage(QImage &renderedImage);
 
@@ -21,6 +22,7 @@ signals:
   void unpause();
   void pause();
   void pauseAfterUpdate();
+  void manualSceneUpdate();
 
   // QWidget interface
 protected:
@@ -31,6 +33,7 @@ protected:
 private:
   QPointF oldCenter_;
   QRectF viewportRect_ = QRectF(QPointF(0, 0), QPointF(840, 840));
+  bool isManualUpdated_ = false;
 };
 
 } // namespace doodlelib
