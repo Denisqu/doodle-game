@@ -17,9 +17,12 @@ DoodleEnv::DoodleEnv(QObject *parent) : QObject(parent) {
  */
 void DoodleEnv::make() {
   qDebug() << "make in doodle env!!!";
-  if (view_.get())
+  if (view_.get()) {
+    emit makeEnd();
     return;
-  view_ = std::make_unique<doodlelib::View>(84, 84);
+  }
+  view_ = std::make_unique<doodlelib::View>(84, 84, true);
+  view_->setFixedSize(QSize(84, 84));
   emit view_->pause();
 
   view_->show();

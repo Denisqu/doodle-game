@@ -25,7 +25,7 @@ class GameLogic : public QObject {
 public:
   static GameLogic *GetInstance();
   static constexpr double TimeStep = 1.0f / 120;
-  static constexpr double TimeStepMultiplier = 1.0f;
+  static constexpr double TimeStepMultiplier = 2.0f;
 
   b2Body *addEntity(std::unique_ptr<Entity> entity);
   void
@@ -76,7 +76,9 @@ private:
   b2Vec2 previousPlatformUpdatePos_{};
 
   // костыль для обучения
-  double playerReward_;
+  double playerReward_ = 0;
+  double playerRewardOnPreviousStep_ = 0;
+  int rewardNotChangedStepsCount_ = 0;
 
   friend class ContactListener;
 };

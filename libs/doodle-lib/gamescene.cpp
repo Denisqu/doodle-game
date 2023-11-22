@@ -58,7 +58,7 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
 
 std::tuple<double, bool> GameScene::getInfoForLearning() {
   if (isTerminal_)
-    return {playerPreviousReward_ * 0.8f, isTerminal_};
+    return {logic_->getPlayerReward(), isTerminal_};
   else
     return {logic_->getPlayerReward(), isTerminal_};
 }

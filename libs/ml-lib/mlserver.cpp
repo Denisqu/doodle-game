@@ -134,14 +134,14 @@ void MLServer::socketDisconnected() {
 
 void MLServer::processReceivedJson(const QJsonObject &json) {
   if (json.contains("f") && json["f"] == "make") {
-    qDebug() << "make received";
+    // qDebug() << "make received";
     emit make();
   } else if (json.contains("f") && json["f"] == "reset") {
-    qDebug() << "reset received";
+    // qDebug() << "reset received";
     emit reset();
   } else if (json.contains("f") && json["f"] == "step") {
     auto params = json["params"];
-    qDebug() << "step received with params = " << params.toString();
+    // qDebug() << "step received with params = " << params.toString();
 
     auto action = stringToAction(params.toString());
     if (action.has_value()) {

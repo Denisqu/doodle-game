@@ -39,7 +39,7 @@ bool GameLogic::step() {
                              it.first->GetAngle());
     }
 
-    // lose player
+    // lose player if he is falling
     if (it.first->GetLinearVelocity().y < -14) {
       qDebug() << "You lose!";
       emit playerLose(it.second.get());
@@ -52,6 +52,22 @@ bool GameLogic::step() {
       it.second->setReward(it.first->GetPosition().y);
       qDebug() << it.second->getReward();
       playerReward_ = it.second->getReward();
+    }
+
+    // update rewardNotChangedStepsCount_ and playerRewardOnPreviousStep_
+    if (int(playerReward_) == int(playerRewardOnPreviousStep_)) {
+      ++rewardNotChangedStepsCount_;
+    } else {
+      rewardNotChangedStepsCount_ = 0;
+      playerRewardOnPreviousStep_ = playerReward_;
+    }
+
+    // lose if reward is same for long time
+    if (rewardNotChangedStepsCount_ > 600) {
+      rewardNotChangedStepsCount_ = 0;
+      qDebug() << "You lose!";
+      emit playerLose(it.second.get());
+      return true;
     }
 
     // move player
@@ -94,6 +110,8 @@ bool GameLogic::step() {
     previousPlatformUpdatePos_ =
         playerEntityByBody_.begin()->first->GetPosition();
   }
+
+  qDebug() << "reward = " << playerReward_;
 
   // global physics step:
   world_->Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
