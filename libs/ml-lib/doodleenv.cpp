@@ -53,8 +53,10 @@ void DoodleEnv::step(Actions action) {
 
   QString base64Image = getBase64ViewImage();
 
-  emit stepEnd(std::make_shared<std::tuple<QString, double, bool>>(base64Image,
-                                                                   100, false));
+  auto learningInfo = view_->getInfoForLearning();
+
+  emit stepEnd(std::make_shared<std::tuple<QString, double, bool>>(
+      base64Image, std::get<0>(learningInfo), std::get<1>(learningInfo)));
 }
 
 void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {

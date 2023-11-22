@@ -32,7 +32,7 @@ public:
   addOnAddEntityCallback(std::function<void(const Entity &entity)> callback);
   void doOnActiveBody(std::function<void(b2Body *body)> func);
   std::shared_ptr<Entity> getEnityByBody(b2Body *body);
-  void step();
+  bool step();
   std::vector<b2Vec2> getPlayerPositions();
   void setSceneHorizontalBounds(double leftBound, double rightBound);
   void generateObjectPool();
@@ -76,7 +76,7 @@ private:
   b2Vec2 previousPlatformUpdatePos_{};
 
   // костыль для обучения
-  double playerReward;
+  double playerReward_;
 
   friend class ContactListener;
 };

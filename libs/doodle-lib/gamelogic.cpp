@@ -18,13 +18,15 @@ GameLogic::GameLogic()
 
 GameState GameLogic::state() const { return state_; }
 
+double GameLogic::getPlayerReward() { return playerReward_; }
+
 GameLogic *GameLogic::GetInstance() {
   if (instance_ == nullptr)
     instance_ = new GameLogic();
   return instance_;
 }
 
-void GameLogic::step() {
+bool GameLogic::step() {
   // player
   for (auto &it : playerEntityByBody_) {
     // teleport on scene bounds
@@ -41,7 +43,7 @@ void GameLogic::step() {
     if (it.first->GetLinearVelocity().y < -14) {
       qDebug() << "You lose!";
       emit playerLose(it.second.get());
-      return;
+      return true;
     }
 
     // update reward
@@ -49,7 +51,7 @@ void GameLogic::step() {
         it.first->GetPosition().y > it.second->getReward()) {
       it.second->setReward(it.first->GetPosition().y);
       qDebug() << it.second->getReward();
-      playerReward = it.second->getReward();
+      playerReward_ = it.second->getReward();
     }
 
     // move player
@@ -96,6 +98,8 @@ void GameLogic::step() {
   // global physics step:
   world_->Step(GameLogic::TimeStep * GameLogic::TimeStepMultiplier,
                velocityIterations_, positionIterations_);
+
+  return false;
 }
 
 std::vector<b2Vec2> GameLogic::getPlayerPositions() {

@@ -56,7 +56,12 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
   return entityToRectItemMap_[&entity];
 }
 
-std::tuple<double, bool> GameScene::getInfoForLearning() {}
+std::tuple<double, bool> GameScene::getInfoForLearning() {
+  if (isTerminal_)
+    return {playerPreviousReward_ * 0.8f, isTerminal_};
+  else
+    return {logic_->getPlayerReward(), isTerminal_};
+}
 
 void GameScene::pauseAfterUpdate() { isPausedAfterUpdate_ = true; }
 
@@ -77,7 +82,8 @@ void GameScene::update() {
   isUpdating_ = true;
 
   // update logic
-  logic_->step();
+  playerPreviousReward_ = logic_->getPlayerReward();
+  isTerminal_ = logic_->step();
 
   // render graphics on QGraphicsScene
   logic_->doOnActiveBody([this](b2Body *body) {

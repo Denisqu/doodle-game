@@ -45,7 +45,7 @@ void View::renderViewToImage(QImage &renderedImage) {
 
 std::tuple<double, bool> View::getInfoForLearning() {
   auto scene = static_cast<GameScene *>(this->scene());
-  return {}
+  return scene->getInfoForLearning();
 }
 
 void View::centerViewOnPlayer(QVector<QPointF> positions) {

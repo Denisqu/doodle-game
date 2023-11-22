@@ -46,6 +46,10 @@ private:
   bool isUpdating_ = false;
   bool isPausedAfterUpdate_ = false;
   bool isManualUpdated_ = false;
+
+  // костыли
+  double playerPreviousReward_ = 0;
+  bool isTerminal_ = false;
 };
 
 #endif // GAMESCENE_H
