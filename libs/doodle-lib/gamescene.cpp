@@ -14,9 +14,10 @@
 #include <algorithm>
 
 GameScene::GameScene(const QRectF &sceneRect, bool isManualUpdated,
-                     QObject *parent)
+                     bool isRestartedOnlyManually, QObject *parent)
     : QGraphicsScene(sceneRect, parent), mUpdateTimer_{new QTimer(this)},
-      logic_(GameLogic::GetInstance()), isManualUpdated_(isManualUpdated) {
+      logic_(GameLogic::GetInstance()), isManualUpdated_(isManualUpdated),
+      isRestartedOnlyManually_(isManualUpdated_) {
 
   connect(mUpdateTimer_, &QTimer::timeout, this, &GameScene::update);
   connect(this, &GameScene::propagatePressedKey, logic_,
@@ -26,6 +27,12 @@ GameScene::GameScene(const QRectF &sceneRect, bool isManualUpdated,
   connect(logic_, &GameLogic::gameRestartStarted, this,
           &GameScene::resetGraphicsScene);
   connect(this, &GameScene::restartGame, logic_, &GameLogic::restartGame);
+  connect(this, &GameScene::restartGame,
+          [this] { this->playerPreviousReward_ = 0; });
+
+  if (isRestartedOnlyManually_) {
+    disconnect(logic_, &GameLogic::playerLose, logic_, &GameLogic::restartGame);
+  }
 
   // register callback
   logic_->addOnAddEntityCallback([this](const Entity &entity) {
@@ -58,9 +65,9 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
 
 std::tuple<double, bool> GameScene::getInfoForLearning() {
   if (isTerminal_)
-    return {logic_->getPlayerReward(), isTerminal_};
+    return {logic_->getPlayerReward() - playerPreviousReward_, isTerminal_};
   else
-    return {logic_->getPlayerReward(), isTerminal_};
+    return {logic_->getPlayerReward() - playerPreviousReward_, isTerminal_};
 }
 
 void GameScene::pauseAfterUpdate() { isPausedAfterUpdate_ = true; }
@@ -84,6 +91,8 @@ void GameScene::update() {
   // update logic
   playerPreviousReward_ = logic_->getPlayerReward();
   isTerminal_ = logic_->step();
+  qDebug() << "previous_reward:" << playerPreviousReward_;
+  qDebug() << "player_reward: " << logic_->getPlayerReward();
 
   // render graphics on QGraphicsScene
   logic_->doOnActiveBody([this](b2Body *body) {

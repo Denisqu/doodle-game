@@ -8,11 +8,13 @@
 namespace doodlelib {
 
 View::View(int w, int h, bool isManualUpdated, QWidget *widget)
-    : QGraphicsView(widget), h_(h), w_(w), isManualUpdated_(isManualUpdated) {
+    : QGraphicsView(widget), h_(h), w_(w), isManualUpdated_(isManualUpdated),
+      isRestartedManually_(isManualUpdated) {
   viewportRect_.moveCenter(QPointF(50 * GameScene::SceneScale, 0));
   oldCenter_ = viewportRect_.center();
 
-  auto scene = new GameScene(viewportRect_, isManualUpdated_, this);
+  auto scene = new GameScene(viewportRect_, isManualUpdated_,
+                             isRestartedManually_, this);
   setScene(scene);
   resize(w, h);
   scale(1, -1);

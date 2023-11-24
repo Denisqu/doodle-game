@@ -16,6 +16,7 @@ class GameScene : public QGraphicsScene {
   Q_OBJECT
 public:
   explicit GameScene(const QRectF &sceneRect, bool isManualUpdated = false,
+                     bool isRestartedOnlyManually = false,
                      QObject *parent = nullptr);
   QGraphicsRectItem *getRectItemByEntity(const Entity &entity);
   constexpr static const double SceneScale = 50;
@@ -48,6 +49,7 @@ private:
   bool isManualUpdated_ = false;
 
   // костыли
+  bool isRestartedOnlyManually_ = false;
   double playerPreviousReward_ = 0;
   bool isTerminal_ = false;
 };

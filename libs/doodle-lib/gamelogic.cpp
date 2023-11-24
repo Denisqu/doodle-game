@@ -50,13 +50,14 @@ bool GameLogic::step() {
     if (it.first->GetLinearVelocity().y > 0 &&
         it.first->GetPosition().y > it.second->getReward()) {
       it.second->setReward(it.first->GetPosition().y);
-      qDebug() << it.second->getReward();
+      // qDebug() << it.second->getReward();
       playerReward_ = it.second->getReward();
     }
 
     // update rewardNotChangedStepsCount_ and playerRewardOnPreviousStep_
     if (int(playerReward_) == int(playerRewardOnPreviousStep_)) {
       ++rewardNotChangedStepsCount_;
+      playerReward_ = playerReward_ * 0.999f;
     } else {
       rewardNotChangedStepsCount_ = 0;
       playerRewardOnPreviousStep_ = playerReward_;
@@ -190,6 +191,7 @@ void GameLogic::startGame() {
   auto playerEntity = std::unique_ptr<Entity>(
       static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
           b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
+  playerIntialY = 1;
   addEntity(std::move(playerEntity));
 
   updatePlatformPositions(PlatformGenerationState::Reset);
@@ -205,6 +207,7 @@ void GameLogic::restartGame() {
     return;
 
   emit gameRestartStarted();
+  qDebug() << "restarting game!!!";
   // reset data structures
   state_ = GameState::Invalid;
   basicEntityByBody_ = std::unordered_map<b2Body *, std::shared_ptr<Entity>>();
@@ -214,7 +217,11 @@ void GameLogic::restartGame() {
   previousPlatformUpdatePos_ = {0, 0};
   world_.reset();
 
+  playerReward_ = 0;
+  playerRewardOnPreviousStep_ = 0;
+
   startGame();
+  qDebug() << "restarting game is ended!!";
 
   emit gameRestartEnded();
 }

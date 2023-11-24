@@ -37,6 +37,7 @@ private:
   QPointF oldCenter_;
   QRectF viewportRect_ = QRectF(QPointF(0, 0), QPointF(840, 840));
   bool isManualUpdated_ = false;
+  bool isRestartedManually_ = false;
 };
 
 } // namespace doodlelib

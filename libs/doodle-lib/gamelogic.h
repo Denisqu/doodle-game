@@ -79,6 +79,8 @@ private:
   double playerReward_ = 0;
   double playerRewardOnPreviousStep_ = 0;
   int rewardNotChangedStepsCount_ = 0;
+  double playerIntialY = 0;
+  unsigned long long updateStep_ = 0;
 
   friend class ContactListener;
 };
