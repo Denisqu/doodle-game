@@ -21,8 +21,8 @@ void DoodleEnv::make() {
     emit makeEnd();
     return;
   }
-  view_ = std::make_unique<doodlelib::View>(84, 84, true);
-  view_->setFixedSize(QSize(84, 84));
+  view_ = std::make_unique<doodlelib::View>(840, 840, true);
+  view_->setFixedSize(QSize(336, 336));
   emit view_->pause();
 
   view_->show();
@@ -81,7 +81,7 @@ void DoodleEnv::sendFakeKeyPressEventToView(Actions action) {
 }
 
 QString DoodleEnv::getBase64ViewImage() {
-  screenImage = QImage(view_->size(), QImage::Format::Format_RGB16);
+  screenImage = QImage(QSize(84,84), QImage::Format::Format_RGB16);
   view_->renderViewToImage(screenImage);
   QByteArray byteArray;
   QBuffer buffer(&byteArray);

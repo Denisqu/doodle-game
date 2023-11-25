@@ -40,8 +40,10 @@ View::View(int w, int h, bool isManualUpdated, QWidget *widget)
 
 void View::renderViewToImage(QImage &renderedImage) {
   QPainter painter(&renderedImage);
-  QRect renderRect =
-      QRect(QPoint(0, 0), QPoint(this->size().width(), this->size().height()));
+  /*QRect renderRect =
+      QRect(QPoint(0, 0), QPoint(this->size().width(), this->size().height()));*/
+    QRect renderRect =
+      QRect(QPoint(0, 0), QPoint(84, 84));
   this->render(&painter, renderRect);
 }
 

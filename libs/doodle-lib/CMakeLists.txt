@@ -16,10 +16,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #link_directories(doodle-lib external/)
 
 
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/external)
+
+
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
+
+message(PROJECT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_library(doodle-lib SHARED
   doodle-lib_global.h
@@ -37,9 +40,14 @@ add_library(doodle-lib SHARED
   contactlistener.h contactlistener.cpp
 )
 
+target_link_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external)
+
+#set_target_properties(doodle-lib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/box2d.lib)
+
 target_include_directories(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include/)
 target_link_libraries(doodle-lib PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(doodle-lib PRIVATE box2d)
+#target_link_libraries(doodle-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/box2d.lib)
 
 add_compile_definitions(_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH)
 target_compile_definitions(doodle-lib PRIVATE DOODLELIB_LIBRARY)

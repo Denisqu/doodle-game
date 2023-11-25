@@ -55,16 +55,16 @@ bool GameLogic::step() {
     }
 
     // update rewardNotChangedStepsCount_ and playerRewardOnPreviousStep_
-    if (int(playerReward_) == int(playerRewardOnPreviousStep_)) {
+    if (int(playerReward_) <= int(playerRewardOnPreviousStep_)) {
       ++rewardNotChangedStepsCount_;
-      playerReward_ = playerReward_ * 0.999f;
+      //playerReward_ = playerReward_ * 0.9999f;
     } else {
       rewardNotChangedStepsCount_ = 0;
       playerRewardOnPreviousStep_ = playerReward_;
     }
 
     // lose if reward is same for long time
-    if (rewardNotChangedStepsCount_ > 600) {
+    if (rewardNotChangedStepsCount_ > 300) {
       rewardNotChangedStepsCount_ = 0;
       qDebug() << "You lose!";
       emit playerLose(it.second.get());
@@ -140,7 +140,7 @@ void GameLogic::generateObjectPool() {
   for (int i = 0; i < 10; ++i) {
     auto platformBox =
         std::unique_ptr<Entity>(EntityConstructor::CreateStaticBox(
-            b2Vec2(3.0f, 0.25f), b2Vec2(100, 100)));
+            b2Vec2(5.0f, 0.25f), b2Vec2(100, 100)));
     auto platformBody = this->addEntity(std::move(platformBox));
     objectPool_[BodyUserData::Platform].push_back(platformBody);
   }
@@ -190,7 +190,7 @@ void GameLogic::startGame() {
   addEntity(std::move(groundBox));
   auto playerEntity = std::unique_ptr<Entity>(
       static_cast<Entity *>(EntityConstructor::CreatePlayerEntity(
-          b2Vec2(0.5f, 0.5f), b2Vec2(50, 1), ControllerType::Human)));
+          b2Vec2(1.0f, 1.0f), b2Vec2(50, 1), ControllerType::Human)));
   playerIntialY = 1;
   addEntity(std::move(playerEntity));
 

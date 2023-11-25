@@ -13,6 +13,15 @@
 #include <QRandomGenerator>
 #include <algorithm>
 
+namespace {
+int calcReward(double previousReward, double currentReward) {
+    auto diff = currentReward - previousReward;
+    return int (diff * 100);
+}
+}
+
+
+
 GameScene::GameScene(const QRectF &sceneRect, bool isManualUpdated,
                      bool isRestartedOnlyManually, QObject *parent)
     : QGraphicsScene(sceneRect, parent), mUpdateTimer_{new QTimer(this)},
@@ -65,9 +74,9 @@ QGraphicsRectItem *GameScene::getRectItemByEntity(const Entity &entity) {
 
 std::tuple<double, bool> GameScene::getInfoForLearning() {
   if (isTerminal_)
-    return {logic_->getPlayerReward() - playerPreviousReward_, isTerminal_};
+    return {calcReward(playerPreviousReward_, logic_->getPlayerReward()), isTerminal_};
   else
-    return {logic_->getPlayerReward() - playerPreviousReward_, isTerminal_};
+    return {calcReward(playerPreviousReward_, logic_->getPlayerReward()), isTerminal_};
 }
 
 void GameScene::pauseAfterUpdate() { isPausedAfterUpdate_ = true; }
