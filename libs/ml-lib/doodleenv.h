@@ -7,7 +7,7 @@
 #include <tuple>
 #include <view.h>
 
-enum class Actions : unsigned int { Left = 0, Right };
+enum class Actions : unsigned int { Left = 0, Right, Invalid };
 Q_DECLARE_METATYPE(Actions)
 
 // https://www.gymlibrary.dev/content/environment_creation/

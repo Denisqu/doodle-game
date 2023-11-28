@@ -5,6 +5,7 @@
 #include "ml-lib_global.h"
 #include <QObject>
 #include <QWebSocketServer>
+#include <optional>
 
 enum class Actions : unsigned int;
 
@@ -25,7 +26,7 @@ signals:
   // logical signals
   void make();
   void reset();
-  void step(Actions action);
+  void step(Actions action); // unit-tests+
 
 private slots:
   void onNewConnection();
@@ -34,12 +35,16 @@ private slots:
   void socketDisconnected();
 
 private:
-  void processReceivedJson(const QJsonObject &json);
+  void processReceivedJson(const QJsonObject &json); // unit-tests+
   void sendJsonMessage(const QJsonObject &json);
+  std::optional<QJsonObject> stringToJson(QString string);
+  std::optional<Actions> stringToAction(QString string);
 
   QWebSocketServer *server_ = nullptr;
   QList<QWebSocket *> clients_;
   bool debug_ = true;
+
+  friend struct MLServerTests;
 };
 
 #endif // MLSERVER_H

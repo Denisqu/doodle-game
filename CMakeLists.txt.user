@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2023-11-26T12:21:00. -->
+<!-- Written by QtCreator 7.0.0, 2023-11-27T09:36:29. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -70,6 +70,10 @@
    <valuemap type="QVariantMap" key="AutoTest.CheckStates">
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mllibtest.cpp:DemonstrateGTestMacros">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mllibtest.cpp:ExampleTest">Checked</value>
+    <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:MLServerTests">Checked</value>
+    <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Make">Checked</value>
+    <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Reset">Checked</value>
+    <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Step">Checked</value>
    </valuemap>
    <value type="int" key="AutoTest.RunAfterBuild">0</value>
    <value type="bool" key="AutoTest.UseGlobal">true</value>
@@ -309,7 +313,24 @@
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/build-doodle-game-Desktop_Qt_5_15_2_MSVC2019_64bit-Debug</value>
    </valuemap>
-   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.1">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">ml-lib-tests</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.ml-lib-tests</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">ml-lib-tests</value>
+    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/build-doodle-game-Desktop_Qt_5_15_2_MSVC2019_64bit-Debug</value>
+   </valuemap>
+   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">2</value>
   </valuemap>
  </data>
  <data>
