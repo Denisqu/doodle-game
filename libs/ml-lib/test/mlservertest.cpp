@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QSignalSpy>
 #include <QVariant>
+#include <QWebSocket>
 #include <gtest/gtest.h>
 
 // https://doc.qt.io/qt-5/qttest-index.html
@@ -11,10 +12,6 @@ struct MLServerTests : public testing::Test {
   MLServer *server;
 
   void processTextMessage(QString msg) { server->processTextMessage(msg); }
-
-  void processBinaryMessage(QByteArray msg) {
-    server->processBinaryMessage(msg);
-  }
 
   void processReceivedJson(const QJsonObject &json) {
     server->processReceivedJson(json);
@@ -33,12 +30,13 @@ protected:
   virtual void TearDown() override { delete server; }
 };
 
+// ЭТОТ ТЕСТ НЕ НУЖЕН Т.К. ПО СУТИ ТУТ ТЕСТИРУЕТСЯ stringToJson
 TEST_F(MLServerTests, ProcessTextMessage_Invalid) {
-  // todo
-}
+  auto spy = QSignalSpy(server, &MLServer::invalidTextInputReceived);
+  auto invalidInput = QString("123abcda'");
 
-TEST_F(MLServerTests, ProcessBinaryMessage_Arbitrary) {
-  // todo
+  processTextMessage(invalidInput);
+  EXPECT_EQ(1, spy.count());
 }
 
 TEST_F(MLServerTests, StringToJson_Valid) {

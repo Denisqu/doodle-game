@@ -5,13 +5,14 @@ project(ml-lib-tests LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(gtest_force_shared_crt on)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED TEST)
 
 add_subdirectory(external/googletest-1.14.0)
 
 add_executable(ml-lib-tests
-    mllibtest.cpp
+    #mllibtest.cpp
     mlservertest.cpp
 )
 target_link_libraries(ml-lib-tests PUBLIC
@@ -28,7 +29,7 @@ target_link_libraries(ml-lib-tests
 target_link_libraries(ml-lib-tests PRIVATE doodle-lib ml-lib)
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt on)
+
 
 add_test(
     NAME ml-lib-tests

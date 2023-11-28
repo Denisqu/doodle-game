@@ -23,10 +23,11 @@ public slots:
 signals:
   // websocket server signals
   void closed();
+  void invalidTextInputReceived(QString str);
   // logical signals
   void make();
   void reset();
-  void step(Actions action); // unit-tests+
+  void step(Actions action);
 
 private slots:
   void onNewConnection();

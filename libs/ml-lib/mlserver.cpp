@@ -97,12 +97,14 @@ void MLServer::processTextMessage(QString msg) {
   QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
   if (debug_)
     qDebug() << "Message received:" << msg;
-  if (!pClient)
+  if (!pClient) {
     return;
+  }
 
   auto optionalJson = stringToJson(msg);
   if (!optionalJson.has_value()) {
     qDebug() << "invalid json";
+    emit invalidTextInputReceived(msg);
     return;
   }
   auto json = optionalJson.value();
@@ -110,12 +112,9 @@ void MLServer::processTextMessage(QString msg) {
 }
 
 void MLServer::processBinaryMessage(QByteArray msg) {
-  QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+  // QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
   if (debug_)
     qDebug() << "Binary Message received:" << msg;
-  if (pClient) {
-    // pClient->sendBinaryMessage(msg);
-  }
 }
 
 void MLServer::socketDisconnected() {
