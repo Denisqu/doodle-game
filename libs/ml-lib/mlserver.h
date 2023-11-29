@@ -25,27 +25,28 @@ signals:
   void closed();
   void invalidTextInputReceived(QString str);
   // logical signals
-  void make();
-  void reset();
-  void step(Actions action);
+  void make();               // unit-tests+
+  void reset();              // unit-tests+
+  void step(Actions action); // unit-tests+
 
 private slots:
-  void onNewConnection();
-  void processTextMessage(QString msg);
+  void onNewConnection();               // unit-tests+
+  void processTextMessage(QString msg); // unit-tests+
   void processBinaryMessage(QByteArray msg);
-  void socketDisconnected();
+  void socketDisconnected(); // unit-tests+
 
 private:
-  void processReceivedJson(const QJsonObject &json); // unit-tests+
-  void sendJsonMessage(const QJsonObject &json);
-  std::optional<QJsonObject> stringToJson(QString string);
-  std::optional<Actions> stringToAction(QString string);
+  void processReceivedJson(const QJsonObject &json);       // unit-tests+
+  void sendJsonMessage(const QJsonObject &json);           // unit-tests+
+  std::optional<QJsonObject> stringToJson(QString string); // unit-tests+
+  std::optional<Actions> stringToAction(QString string);   // unit-tests+
 
   QWebSocketServer *server_ = nullptr;
   QList<QWebSocket *> clients_;
   bool debug_ = true;
 
   friend struct MLServerTests;
+  friend struct MLServerWebsocketClientTests;
 };
 
 #endif // MLSERVER_H

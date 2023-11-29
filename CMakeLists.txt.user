@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2023-11-28T22:47:31. -->
+<!-- Written by QtCreator 7.0.0, 2023-11-29T10:08:26. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -73,7 +73,6 @@
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Reset_CorrectInput">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Step_CorrectInput">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessReceivedJson_Step_IncorrectInput">Checked</value>
-    <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:ProcessTextMessage_Invalid">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:StringToAction_Invalid">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:StringToAction_Valid">Checked</value>
     <value type="Qt::CheckState" key="1@C:/Users/Denis/My Data/Projects/cxx-projects/qt-doodle-game/doodle-game/libs/ml-lib/test/mlservertest.cpp:StringToJson_Invalid">Checked</value>

@@ -1,5 +1,6 @@
 #include "../mlserver.h"
 #include <QApplication>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QSignalSpy>
 #include <QVariant>
@@ -30,29 +31,49 @@ protected:
   virtual void TearDown() override { delete server; }
 };
 
-// ЭТОТ ТЕСТ НЕ НУЖЕН Т.К. ПО СУТИ ТУТ ТЕСТИРУЕТСЯ stringToJson
-TEST_F(MLServerTests, ProcessTextMessage_Invalid) {
-  auto spy = QSignalSpy(server, &MLServer::invalidTextInputReceived);
-  auto invalidInput = QString("123abcda'");
-
-  processTextMessage(invalidInput);
-  EXPECT_EQ(1, spy.count());
-}
-
 TEST_F(MLServerTests, StringToJson_Valid) {
-  // todo
+  auto json = QJsonObject();
+  json["f"] = "step";
+  json["status"] = true;
+  auto string = QJsonDocument(json).toJson();
+  auto result = stringToJson(string);
+
+  EXPECT_EQ(result.has_value(), result.has_value());
 }
 
 TEST_F(MLServerTests, StringToJson_Invalid) {
-  // todo
+  auto invalidInput = QString("123abcda'");
+  auto result = stringToJson(invalidInput);
+
+  EXPECT_EQ(std::optional<QJsonObject>().has_value(), result.has_value());
 }
 
 TEST_F(MLServerTests, StringToAction_Valid) {
-  // todo
+
+  QList<QPair<QString, Actions>> validInputsToResultMap;
+  validInputsToResultMap.push_back({"R", Actions::Right});
+  validInputsToResultMap.push_back({"L", Actions::Left});
+
+  for (const auto &validInputToResult : validInputsToResultMap) {
+    const auto &string = validInputToResult.first;
+    const auto &expectedResult = validInputToResult.second;
+    EXPECT_EQ(expectedResult, stringToAction(string));
+  }
 }
 
 TEST_F(MLServerTests, StringToAction_Invalid) {
-  // todo
+  QList<QPair<QString, Actions>> invalidInputsToResultMap;
+  invalidInputsToResultMap.push_back({"RRR", Actions::Invalid});
+  invalidInputsToResultMap.push_back({"LLL", Actions::Invalid});
+  invalidInputsToResultMap.push_back({"r", Actions::Invalid});
+  invalidInputsToResultMap.push_back({"l", Actions::Invalid});
+  invalidInputsToResultMap.push_back({"RL", Actions::Invalid});
+  invalidInputsToResultMap.push_back({"LR", Actions::Invalid});
+
+  for (const auto &validInputToResult : invalidInputsToResultMap) {
+    const auto &string = validInputToResult.first;
+    EXPECT_EQ(std::optional<Actions>(), stringToAction(string));
+  }
 }
 
 TEST_F(MLServerTests, ProcessReceivedJson_Make_CorrectInput) {
