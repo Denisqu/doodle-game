@@ -16,9 +16,9 @@ public:
   ~MLServer();
 
 public slots:
-  void stepCallback(DoodleEnv::StepDataPtr data);
-  void makeCallback();
-  void resetCallback(QString state);
+  void stepCallback(DoodleEnv::StepDataPtr data); // unit-tests+
+  void makeCallback();                            // unit-tests+
+  void resetCallback(QString state);              // unit-tests+
 
 signals:
   // websocket server signals

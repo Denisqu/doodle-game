@@ -7,7 +7,10 @@
 #include <QWebSocket>
 #include <gtest/gtest.h>
 
-// https://doc.qt.io/qt-5/qttest-index.html
+///
+/// \brief The MLServerTests struct
+/// Структура тестов, проверяющих MLServer напрямую без
+/// использования WebSocket клиента
 struct MLServerTests : public testing::Test {
   // Test interface
   MLServer *server;
@@ -31,6 +34,7 @@ protected:
   virtual void TearDown() override { delete server; }
 };
 
+// Проверка преобразования валидного QString -> QJsonObject
 TEST_F(MLServerTests, StringToJson_Valid) {
   auto json = QJsonObject();
   json["f"] = "step";
@@ -41,6 +45,7 @@ TEST_F(MLServerTests, StringToJson_Valid) {
   EXPECT_EQ(result.has_value(), result.has_value());
 }
 
+// Проверка преобразования невалидного QString -> QJsonObject
 TEST_F(MLServerTests, StringToJson_Invalid) {
   auto invalidInput = QString("123abcda'");
   auto result = stringToJson(invalidInput);
@@ -48,6 +53,7 @@ TEST_F(MLServerTests, StringToJson_Invalid) {
   EXPECT_EQ(std::optional<QJsonObject>().has_value(), result.has_value());
 }
 
+// Проверка преобразования валидного QString -> enum class Actions
 TEST_F(MLServerTests, StringToAction_Valid) {
 
   QList<QPair<QString, Actions>> validInputsToResultMap;
@@ -61,6 +67,7 @@ TEST_F(MLServerTests, StringToAction_Valid) {
   }
 }
 
+// Проверка преобразования невалидного QString -> enum class Actions
 TEST_F(MLServerTests, StringToAction_Invalid) {
   QList<QPair<QString, Actions>> invalidInputsToResultMap;
   invalidInputsToResultMap.push_back({"RRR", Actions::Invalid});
@@ -76,6 +83,7 @@ TEST_F(MLServerTests, StringToAction_Invalid) {
   }
 }
 
+// Проверка вызыва сигнала make после получения корректного json
 TEST_F(MLServerTests, ProcessReceivedJson_Make_CorrectInput) {
   auto spy = QSignalSpy(server, &MLServer::make);
   auto json = QJsonObject();
@@ -85,6 +93,7 @@ TEST_F(MLServerTests, ProcessReceivedJson_Make_CorrectInput) {
   EXPECT_EQ(1, spy.count());
 }
 
+// Проверка вызыва сигнала reset после получения некорректного json
 TEST_F(MLServerTests, ProcessReceivedJson_Reset_CorrectInput) {
   auto spy = QSignalSpy(server, &MLServer::reset);
   auto json = QJsonObject();
@@ -94,6 +103,7 @@ TEST_F(MLServerTests, ProcessReceivedJson_Reset_CorrectInput) {
   EXPECT_EQ(1, spy.count());
 }
 
+// Проверка вызыва сигнала step после получения корректного json
 TEST_F(MLServerTests, ProcessReceivedJson_Step_CorrectInput) {
   QHash<QJsonObject, QList<QVariant>> expectedArguments;
   expectedArguments[{{"f", "step"}, {"params", "R"}}] = {
@@ -114,6 +124,7 @@ TEST_F(MLServerTests, ProcessReceivedJson_Step_CorrectInput) {
   }
 }
 
+// Проверка вызыва сигнала make после получения некорректного json
 TEST_F(MLServerTests, ProcessReceivedJson_Step_IncorrectInput) {
   QList<QJsonObject> invalidJsons = {{{"f", "step"}, {"params", "RRR"}},
                                      {{"f", "step"}, {"params", "LLL"}},

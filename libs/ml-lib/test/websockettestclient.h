@@ -19,6 +19,7 @@ public:
 
 Q_SIGNALS:
   void closed();
+  void messageReceived(QString message);
 
 public Q_SLOTS:
   void onConnected() {
@@ -31,7 +32,7 @@ public Q_SLOTS:
   void onTextMessageReceived(QString message) {
     if (m_debug)
       qDebug() << "Message received:" << message;
-    m_webSocket.close();
+    emit messageReceived(message);
   }
 
   void sendTextMessage(QString msg) { m_webSocket.sendTextMessage(msg); }

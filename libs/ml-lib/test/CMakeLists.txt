@@ -15,7 +15,7 @@ add_executable(ml-lib-tests
     #mllibtest.cpp
     mlservertest.cpp
     mlserverwebsocketclienttests.cpp
-    websockettestclient.h websockettestclient.cpp
+    websockettestclient.h #websockettestclient.cpp
 )
 target_link_libraries(ml-lib-tests PUBLIC
     gtest_main
