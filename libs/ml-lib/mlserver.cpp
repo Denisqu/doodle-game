@@ -1,13 +1,11 @@
 #include "mlserver.h"
 #include "doodleenv.h"
 #include "exampleservice.h"
-#include <Optional>
 #include <QDebug>
 #include <QtWebSockets/QtWebSockets>
+#include <optional>
 
-namespace {
-
-std::optional<Actions> stringToAction(QString string) {
+std::optional<Actions> MLServer::stringToAction(QString string) {
   if (string == "L")
     return Actions::Left;
   else if (string == "R")
@@ -16,7 +14,7 @@ std::optional<Actions> stringToAction(QString string) {
     return {};
 }
 
-std::optional<QJsonObject> stringToJson(QString string) {
+std::optional<QJsonObject> MLServer::stringToJson(QString string) {
   QByteArray jsonBytes = string.toLocal8Bit();
   auto jsonDoc = QJsonDocument::fromJson(jsonBytes);
   if (jsonDoc.isNull()) {
@@ -30,8 +28,6 @@ std::optional<QJsonObject> stringToJson(QString string) {
   QJsonObject json = jsonDoc.object();
   return json;
 }
-
-} // namespace
 
 MLServer::MLServer(quint16 port, QObject *parent)
     : QObject{parent},
@@ -101,12 +97,14 @@ void MLServer::processTextMessage(QString msg) {
   QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
   if (debug_)
     qDebug() << "Message received:" << msg;
-  if (!pClient)
+  if (!pClient) {
     return;
+  }
 
   auto optionalJson = stringToJson(msg);
   if (!optionalJson.has_value()) {
     qDebug() << "invalid json";
+    emit invalidTextInputReceived(msg);
     return;
   }
   auto json = optionalJson.value();
@@ -114,12 +112,9 @@ void MLServer::processTextMessage(QString msg) {
 }
 
 void MLServer::processBinaryMessage(QByteArray msg) {
-  QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+  // QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
   if (debug_)
     qDebug() << "Binary Message received:" << msg;
-  if (pClient) {
-    // pClient->sendBinaryMessage(msg);
-  }
 }
 
 void MLServer::socketDisconnected() {
@@ -139,7 +134,8 @@ void MLServer::processReceivedJson(const QJsonObject &json) {
   } else if (json.contains("f") && json["f"] == "reset") {
     // qDebug() << "reset received";
     emit reset();
-  } else if (json.contains("f") && json["f"] == "step") {
+  } else if (json.contains("f") && json["f"] == "step" &&
+             json.contains("params")) {
     auto params = json["params"];
     // qDebug() << "step received with params = " << params.toString();
 

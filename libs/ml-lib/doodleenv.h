@@ -2,19 +2,14 @@
 #define DOODLEENV_H
 
 #include "ml-lib_global.h"
-#include "mlview.h"
 #include <QObject>
 #include <memory>
 #include <tuple>
+#include <view.h>
 
-enum class Actions : unsigned int { Left = 0, Right };
+enum class Actions : unsigned int { Left = 0, Right, Invalid };
 Q_DECLARE_METATYPE(Actions)
 
-struct Screen {
-  unsigned char data[120][120][3];
-};
-
-// https://pybind11.readthedocs.io/en/stable/classes.html
 // https://www.gymlibrary.dev/content/environment_creation/
 class MLLIB_EXPORT DoodleEnv : public QObject {
   Q_OBJECT
