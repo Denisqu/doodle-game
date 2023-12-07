@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(doodle-game VERSION 0.1 LANGUAGES CXX)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(libs/doodle-lib)
 include_directories(libs/doodle-lib)
 
@@ -11,12 +11,11 @@ include_directories(libs/ml-lib/submodules/jcon-cpp/src/jcon)
 
 add_compile_definitions(_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -25,6 +24,12 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network WebSockets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network WebSockets)
+
+set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-arcs -ftest-coverage")
+
+# set up a mapping so that the Release configuration for the Qt imported target is
+# used in the COVERAGE CMake configuration.
+set_target_properties(Qt5::Core PROPERTIES MAP_IMPORTED_CONFIG_COVERAGE "DEBUG")
 
 set(PROJECT_SOURCES
         main.cpp
@@ -67,6 +72,7 @@ set_target_properties(doodle-game PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(doodle-game)

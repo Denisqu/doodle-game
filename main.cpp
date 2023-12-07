@@ -14,7 +14,7 @@
 int main(int argc, char *argv[]) {
   DoodleApplication a(argc, argv);
 
-  constexpr bool isLearning = true;
+  constexpr bool isLearning = false;
 
   if constexpr (isLearning) {
     auto env = new DoodleEnv(&a);
@@ -33,10 +33,10 @@ int main(int argc, char *argv[]) {
 
     a.serverThread->start();
   } else {
-    doodlelib::View view;
-    view.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    view.setRenderHints(QPainter::Antialiasing);
-    view.show();
+    doodlelib::View *view = new doodlelib::View();
+    view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    view->setRenderHints(QPainter::Antialiasing);
+    view->show();
   }
 
   return a.exec();
