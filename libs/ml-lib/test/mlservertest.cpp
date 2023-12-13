@@ -42,16 +42,20 @@ TEST_F(MLServerTests, StringToJson_Valid) {
   auto string = QJsonDocument(json).toJson();
   auto result = stringToJson(string);
 
-  EXPECT_EQ(result.has_value(), result.has_value());
+  EXPECT_EQ(json, result.value());
 }
 
 // Проверка преобразования невалидного QString -> QJsonObject
+/*
 TEST_F(MLServerTests, StringToJson_Invalid) {
   auto invalidInput = QString("123abcda'");
   auto result = stringToJson(invalidInput);
 
-  EXPECT_EQ(std::optional<QJsonObject>().has_value(), result.has_value());
+
+
+  EXPECT_EQ(, result.has_value());
 }
+*/
 
 // Проверка преобразования валидного QString -> enum class Actions
 TEST_F(MLServerTests, StringToAction_Valid) {

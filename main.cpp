@@ -14,7 +14,7 @@
 int main(int argc, char *argv[]) {
   DoodleApplication a(argc, argv);
 
-  constexpr bool isLearning = false;
+  constexpr bool isLearning = true;
 
   if constexpr (isLearning) {
     auto env = new DoodleEnv(&a);

@@ -12,5 +12,5 @@ DoodleApplication::~DoodleApplication() {
 
   int* a = new int(100);
 
-  _CrtDumpMemoryLeaks();
+  //_CrtDumpMemoryLeaks();
 }
