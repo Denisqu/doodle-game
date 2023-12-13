@@ -46,16 +46,13 @@ TEST_F(MLServerTests, StringToJson_Valid) {
 }
 
 // Проверка преобразования невалидного QString -> QJsonObject
-/*
 TEST_F(MLServerTests, StringToJson_Invalid) {
   auto invalidInput = QString("123abcda'");
   auto result = stringToJson(invalidInput);
 
-
-
-  EXPECT_EQ(, result.has_value());
+  EXPECT_EQ(std::nullopt, result);
 }
-*/
+
 
 // Проверка преобразования валидного QString -> enum class Actions
 TEST_F(MLServerTests, StringToAction_Valid) {
